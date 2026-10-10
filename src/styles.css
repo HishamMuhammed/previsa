@@ -514,6 +514,10 @@ body{
 .tally-seg.fails{background:var(--stamp-soft);color:var(--stamp)}
 .tally-seg.warns{background:var(--warn-soft);color:var(--warn)}
 .tally-seg.passes{background:var(--pass-soft);color:var(--pass)}
+/* 'not checked' is deliberately plain. It is not an error — nothing is wrong, the
+   check simply did not run — so it must not borrow the stamp red reserved for
+   blocking failures. A muted segment that reads as an absence, not an alarm. */
+.tally-seg.skipped{background:var(--paper-3);color:var(--ink-3);border:1px dashed var(--rule-2)}
 
 /* --- fix list: the payoff view, so it reads as instructions --- */
 /* The fix list is a set of links, not a second set of inputs.

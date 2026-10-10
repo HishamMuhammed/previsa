@@ -546,7 +546,88 @@ function priorVisaHistory(app) {
   return [f('R14b', 'pass', 'Prior Schengen history recorded', prev, '', 'Entry history is a mandatory field')];
 }
 
+// ---------------------------------------------------------------- R00
+// Document completeness.
+//
+// This rule exists because of a measured failure of every other rule. Given an
+// application containing only a passport, the engine produced 3 passes and 12
+// 'na' findings — and NOT ONE of them said "you have not provided a bank
+// statement". The missing documents were invisible: each rule that needed one
+// quietly answered 'na', and the applicant was left to infer from a wall of
+// "not checked" that they had forgotten something. A consulate rejects that
+// application on receipt.
+//
+// So completeness is checked first and explicitly. Two distinct cases:
+//
+//   absent  - the document is not in the application at all. Always a fail.
+//   present - the document exists but has no usable fields. A fail too, because
+//             an imported PDF that yielded nothing looks identical to a
+//             half-finished form from the outside, and both need the same
+//             response: go and get the document.
+//
+// Required vs conditional matters. Insurance and accommodation are not required
+// for every destination, so demanding them unconditionally would be the same
+// class of error as the one this rule fixes — a confident wrong answer.
+
+/** Documents every application needs, whatever the destination. */
+const ALWAYS_REQUIRED = [
+  ['passport', 'Passport bio page'],
+  ['application', 'Signed application form'],
+];
+
+/** Documents required only for particular destinations. */
+const CONDITIONAL_DOCS = [
+  ['schengen', [['insurance', 'Travel medical insurance'],
+                ['accommodation', 'Proof of accommodation'],
+                ['bankStatement', 'Bank statement'],
+                ['itinerary', 'Flight itinerary']]],
+  ['uk',       [['bankStatement', 'Bank statement'],
+                ['employment', 'Employment or study letter'],
+                ['accommodation', 'Proof of accommodation']]],
+  ['us',       [['itinerary', 'Flight itinerary'],
+                ['employment', 'Employment letter'],
+                ['bankStatement', 'Bank statement']]],
+];
+
+function documentCompleteness(app) {
+  const dest = destinationKey(app);
+  const wanted = [
+    ...ALWAYS_REQUIRED,
+    ...(CONDITIONAL_DOCS.find(([k]) => k === dest)?.[1] ?? []),
+  ];
+
+  const missing = [];
+  const empty = [];
+  for (const [key, label] of wanted) {
+    // flattenApp synthesises an empty stub for every known document, so presence
+    // cannot be tested with `!app.docs[key]`. A stub is identified by having no
+    // field with a value; a document the applicant actually supplied has at least
+    // one. Checking `key in srcDocs` instead would be clearer, but the rule only
+    // receives the flattened app.
+    const doc = app.docs[key];
+    const hasValue = doc && Object.values(doc.fields ?? {}).some((v) => !blank(v));
+    if (!hasValue) missing.push(label);
+  }
+
+  const out = [];
+  if (missing.length) {
+    out.push(f('R00', 'fail',
+      `Missing document${missing.length > 1 ? 's' : ''}: ${missing.join(', ')}`,
+      `A ${dest === 'schengen' ? 'Schengen' : dest.toUpperCase()} short-stay application needs ${missing.length > 1 ? 'these documents' : 'this document'} and ${missing.length > 1 ? 'they are' : 'it is'} not in the file.`,
+      'Attach the document. An incomplete file is usually returned unprocessed, and the fee is not refunded.',
+      'Document completeness'));
+  } else {
+    out.push(f('R00', 'pass', 'All required documents present',
+      `Checked ${wanted.length} document${wanted.length === 1 ? '' : 's'} required for a ${dest} application.`,
+      '', 'Document completeness'));
+  }
+  return out;
+}
+
 const RULES = [
+  // First in the list deliberately: an applicant should be told what is missing
+  // before being told that two documents disagree.
+  ['R00', 'Document completeness', documentCompleteness],
   ['R01', 'Passport validity', passportExpiry],
   ['R02', 'Name consistency', nameConsistency],
   ['R03', 'Passport number', passportNumber],
@@ -574,11 +655,34 @@ const RULES = [
  * (label/tag/source) always wins over a same-named field; fields never use
  * those three names.
  */
+/**
+ * Every document key any rule or the completeness list refers to, so a file with
+ * documents deleted cannot crash the engine.
+ *
+ * Before this existed, deleting a document from an application made R05 and R11
+ * throw "Cannot read properties of undefined (reading 'fields')" — caught by the
+ * runner and reported as a bland 'na', which is indistinguishable from "this rule
+ * does not apply". The fuzzer only found it because it was taught to drop
+ * documents at all; until then every generated file had all eight, so the crash
+ * path was never entered.
+ */
+const KNOWN_DOCS = [
+  'passport', 'application', 'itinerary', 'accommodation', 'hostLetter',
+  'bankStatement', 'insurance', 'employment',
+];
+
 function flattenApp(src) {
   const app = { meta: { ...(src.meta || {}) }, trip: { ...(src.trip || {}) }, docs: {} };
   for (const [k, d] of Object.entries(src.docs || {})) {
     const fields = { ...(d.fields || {}) };
     app.docs[k] = { ...fields, ...d, fields };
+  }
+  // Synthesise empty stubs for documents the application does not contain. Rules
+  // then read `fields.x` as undefined and answer 'na' honestly, instead of
+  // throwing and being flattened into the same 'na' by the error handler — two
+  // very different situations that looked identical in the report.
+  for (const k of KNOWN_DOCS) {
+    if (!app.docs[k]) app.docs[k] = { label: k, fields: {} };
   }
   app.passport = app.docs.passport ?? {};
   app.meta.submissionDate =

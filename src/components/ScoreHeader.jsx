@@ -4,7 +4,13 @@
 // applicant remembers, so it gets display type rather than sharing the type scale
 // with everything else on the page.
 
-const VERDICT = ({ fail, warn }) => {
+const VERDICT = ({ fail, warn, na }) => {
+  if (na > 0) {
+    // Stated before the failure count on purpose. "3 errors" sounds like a
+    // near-miss when 12 checks never ran; the honest headline is that the report
+    // is incomplete, and R00 now names the absent documents that caused it.
+    return `${na} check${na === 1 ? '' : 's'} could not run — the report is incomplete.`;
+  }
   if (fail > 0) {
     return `${fail} error${fail === 1 ? '' : 's'} will block this application.`;
   }
@@ -26,7 +32,7 @@ export default function ScoreHeader({ report }) {
       className="score-row"
       role="status"
       aria-live="polite"
-      aria-label={`Readiness ${score} percent. ${tally.fail} failing, ${tally.warn} warnings, ${tally.pass} passing.`}
+      aria-label={`Readiness ${score} percent. ${tally.fail} failing, ${tally.warn} warnings, ${tally.pass} passing, ${tally.na} not checked.`}
     >
       <div className="score-block">
         <span className="score-label">ready</span>
@@ -35,9 +41,11 @@ export default function ScoreHeader({ report }) {
       <div className="verdict">
         <p className="verdict-line">{VERDICT(tally)}</p>
         <p className="verdict-sub">
-          {tally.fail > 0
-            ? 'Fix the red fields on the left, then read the report again.'
-            : 'Every check that could run, ran.'}
+          {tally.na > 0
+            ? 'Some checks need documents that are not in the file yet. Filter the report by “Not checked” to see which.'
+            : tally.fail > 0
+              ? 'Fix the red fields on the left, then read the report again.'
+              : 'Every check that could run, ran.'}
         </p>
       </div>
       <div className="tally" aria-hidden="true">
@@ -47,9 +55,16 @@ export default function ScoreHeader({ report }) {
         <div className={`tally-seg warns ${tally.warn ? 'has' : ''}`} style={{ flexGrow: Math.max(tally.warn, 0.001) }}>
           {tally.warn} warnings
         </div>
-        <div className="tally-seg passes" style={{ flexGrow: Math.max(tally.pass, 0.001) }}>
+        <div className={`tally-seg passes ${tally.na ? 'is-slim' : ''}`} style={{ flexGrow: Math.max(tally.pass, 0.001) }}>
           {tally.pass} passing
         </div>
+        {/* Shown only when there is something to show. A permanent "0 not checked"
+            segment would train the eye to ignore it, which defeats the point. */}
+        {tally.na > 0 && (
+          <div className="tally-seg skipped has" style={{ flexGrow: Math.max(tally.na, 0.001) }}>
+            {tally.na} not checked
+          </div>
+        )}
       </div>
       <span className="sr-only">{decided} checks evaluated.</span>
     </div>

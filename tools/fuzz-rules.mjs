@@ -89,7 +89,7 @@ function makeApp() {
   };
   if (chance(0.4)) trip.destinationCountry = pick(['schengen', 'uk', 'us', 'canada', 'australia']);
 
-  return {
+  const app = {
     meta: {
       filed: day(2026, int(0, 300)),
       submissionDate: day(2026, int(0, 300)),
@@ -199,8 +199,23 @@ function makeApp() {
         approvedLeave: pick(['yes', 'no', '']),
       },
     },
-    },
+  },
   };
+
+  // R00 (document completeness) needs files with documents MISSING, otherwise it
+  // can only ever pass and never gets exercised. An earlier version of this
+  // fuzzer always emitted all eight documents, so R00 reported 'pass' on every
+  // generated application — the fuzzer was structurally incapable of testing it.
+  // Drop some documents some of the time, and blank others.
+  const droppable = ['insurance', 'accommodation', 'bankStatement', 'itinerary', 'employment', 'hostLetter'];
+  for (const k of droppable) {
+    const r = Math.random();
+    if (r < 0.08) delete app.docs[k];            // absent entirely
+    else if (r < 0.16) {                         // present but blank
+      app.docs[k] = { fields: Object.fromEntries(Object.keys(app.docs[k].fields).map((f) => [f, ''])) };
+    }
+  }
+  return app;
 }
 
 // Score is computed by the engine itself; use its own number rather than

@@ -11,6 +11,7 @@
     "dateNote": "Slash-form dates on statements and bookings are read as DD/MM/YYYY. Where both readings are valid and different, Preflight flags it rather than guessing."
   },
   "trip": {
+    "destinationCountry": "schengen",
     "arrivalDate": "2027-02-14",
     "departureDate": "2027-02-27",
     "declaredCostEUR": 1800,
