@@ -404,7 +404,32 @@ body{
 }
 .item.fail .fix{border-left-color:var(--stamp)}
 .item.pass .fix{border-left-color:var(--ok)}
-.src{margin-top:7px;font:10.5px/1.4 var(--mono);color:var(--ink-3)}
+.src{
+  margin-top:8px;
+  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+  font:10.5px/1.4 var(--mono);color:var(--ink-3);
+}
+/* The grade of authority, as a small badge. Three grades, three weights:
+   regulation is the only one that is verifiable law, so it is the only one given
+   any colour — and it uses the ink, not the stamp red, because a citation is not
+   an error. */
+.src-kind{
+  font:600 9px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;
+  padding:4px 6px;border:1px solid var(--rule);flex:none;
+}
+.src-kind.k-regulation{color:var(--ink);border-color:var(--rule-2);background:var(--paper-2)}
+.src-kind.k-guidance{color:var(--ink-3)}
+.src-kind.k-consistency{color:var(--ink-3);border-style:dashed}
+.src-cite{color:var(--ink-2)}
+.src-link{color:var(--ink-3);text-decoration:none;border-bottom:1px solid var(--rule)}
+.src-link:hover{color:var(--ink);border-bottom-color:var(--ink-3)}
+/* What the authority actually says. This is the line that lets a reader check the
+   claim instead of trusting it, so it gets reading width rather than being
+   crammed beside the badge. */
+.src-note{
+  margin-top:6px;font:12px/1.5 var(--sans);color:var(--ink-2);max-width:68ch;
+  padding-left:10px;border-left:2px solid var(--rule);
+}
 
 /* ================================================================= graph */
 .legend{display:flex;gap:20px;font:11.5px/1 var(--mono);color:var(--ink-3);margin-bottom:14px;flex-wrap:wrap}

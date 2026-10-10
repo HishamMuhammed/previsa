@@ -11,6 +11,12 @@ import { useMemo } from 'react';
 
 const STATUS_WORD = { fail: 'fail', warn: 'warning', pass: 'pass', na: 'not checked' };
 
+// The three grades of authority. Shown as a badge because the difference matters:
+// a regulation is verifiable law, guidance is what consulates actually do, and a
+// consistency finding has no external authority at all. Collapsing those three
+// into one grey "source:" line is what made the old field ignorable.
+const KIND_WORD = { regulation: 'regulation', guidance: 'consular practice', consistency: 'internal' };
+
 export default function ReportPanel({ report, filter, onFilter }) {
   const shown = useMemo(
     () => report.findings.filter((f) => filter === 'all' || f.status === filter),
@@ -70,7 +76,23 @@ export default function ReportPanel({ report, filter, onFilter }) {
                 </div>
                 <p>{f.detail}</p>
                 {f.fix ? <div className="fix">{f.fix}</div> : null}
-                <div className="src">source: {f.source}</div>
+                {/* The authority. A finding the reader cannot check is a finding they
+                    have to take on trust, and this tool's whole argument is that it is
+                    auditable — so the source line is the load-bearing part, not a
+                    footnote. Regulations link to the official text; guidance and
+                    consistency findings do not pretend to have one. */}
+                <div className="src">
+                  <span className={`src-kind k-${f.authority?.kind ?? 'consistency'}`}>
+                    {KIND_WORD[f.authority?.kind ?? 'consistency']}
+                  </span>
+                  <span className="src-cite">{f.source}</span>
+                  {f.authority?.link && (
+                    <a className="src-link" href={f.authority.link} target="_blank" rel="noreferrer noopener">
+                      official text ↗
+                    </a>
+                  )}
+                </div>
+                {f.authority?.note && <div className="src-note">{f.authority.note}</div>}
               </div>
             ))}
           </div>

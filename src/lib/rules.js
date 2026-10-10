@@ -14,6 +14,7 @@ import {
   DAY, iso, fromSlash, daysBetween, addMonths, human, eachDay,
   isSlash, isGenuinelyAmbiguous, normNameKey, normKey, normAddr, money,
 } from './dates.js';
+import { authorityFor, AUTHORITY } from './authority.js';
 
 const blank = (v) => v == null || String(v).trim() === '';
 const num = (v) => {
@@ -25,6 +26,24 @@ const num = (v) => {
 
 const f = (id, status, title, detail, fix, source) => ({ id, status, title, detail, fix, source });
 const nf = (id, status, title, detail, source) => ({ id, status, title, detail, source });
+
+/**
+ * Attach the rule's authority to a finding.
+ *
+ * The rule functions still pass their own `source` string, and it is kept as
+ * `source` on the finding so the existing components and tests keep working — but
+ * the citation now comes from one table (authority.js) rather than being retyped
+ * at each call site, where four findings cited 'EU 810/2008' (the wrong year) and
+ * R05c pointed at Art. 15, which is insurance rather than the 90/180 limit.
+ *
+ * A finding's `source` is overwritten with the canonical citation. The rule's own
+ * string is retained as `sourceLocal` in case a rule ever needs to say something
+ * more specific than the table entry.
+ */
+function withAuthority(x) {
+  const a = authorityFor(x.id);
+  return { ...x, sourceLocal: x.source, source: a.cite, authority: a };
+}
 
 /** Canonical read of a slash-form date using the declared order. */
 /**
@@ -50,7 +69,7 @@ const readDate = (app, v) => {
 function passportExpiry(app) {
   const out = [];
   const rules = {
-    schengen: { months: 3, label: 'Schengen short-stay (EU 810/2008 Art. 12)' },
+    schengen: { months: 3, label: 'A Schengen short-stay application' },
     'uk': { months: 6, label: 'UK (long-stay rules differ; this is the 6-month guidance)' },
     'us': { months: 6, label: 'United States (six-month club rule)' },
     'canada': { months: 0, label: 'Canada (must be valid at entry)' },
@@ -240,13 +259,13 @@ function schengenRollingWindow(app) {
   if (destinationKey(app) !== 'schengen') {
     return [nf('R05c', 'na', 'Schengen 90/180 allowance',
       'Not a Schengen short-stay application, so the 90/180 allowance does not apply.',
-      'EU 810/2008 Art. 15')];
+      'see authority table')];
   }
   const arrS = app.trip.arrivalDate, depS = app.trip.departureDate;
   const arrival = iso(arrS), departure = iso(depS);
   if (!arrival || !departure || departure < arrival) {
     return [nf('R05c', 'na', 'Schengen 90/180 allowance',
-      'Travel dates are missing or malformed.', 'EU 810/2008 Art. 15')];
+      'Travel dates are missing or malformed.', 'see authority table')];
   }
 
   // Prior stays: [{from, to}] as ISO strings. iso() returns epoch ms, but
@@ -287,21 +306,21 @@ function schengenRollingWindow(app) {
       + (skipped.length ? ` ${skipped.length} prior stay(s) could not be read and were ignored.` : '');
     out.push(f('R05c', 'fail', 'Exceeds the 90-day Schengen allowance',
       detail,
-      'Shorten this trip, drop a prior stay from the same window, or apply for a long-stay visa instead. A second short-stay visa cannot reset the allowance.', 'EU 810/2008 Art. 15'));
+      'Shorten this trip, drop a prior stay from the same window, or apply for a long-stay visa instead. A second short-stay visa cannot reset the allowance.', 'see authority table'));
   } else if (stayDays > 90) {
     out.push(f('R05c', 'warn', 'Stay exceeds 90 days in the Schengen area',
       `Your declared stay is ${stayDays} days, which exceeds a short-stay visa regardless of history.`,
-      'If this is genuinely a long stay, you need a different visa type, not a short-stay application.', 'EU 810/2008 Art. 15'));
+      'If this is genuinely a long stay, you need a different visa type, not a short-stay application.', 'see authority table'));
   } else if (totalInWindow > 75) {
     out.push(f('R05c', 'warn', `Only ${90 - totalInWindow} day(s) of Schengen allowance left after this trip`,
       `${totalInWindow} of 90 days used in the 180 days ending ${human(depS)}.`,
-      'A further trip inside that window could be refused. Plan accordingly.', 'EU 810/2008 Art. 15'));
+      'A further trip inside that window could be refused. Plan accordingly.', 'see authority table'));
   } else {
     out.push(f('R05c', 'pass', 'Within the 90-day Schengen allowance',
       `${totalInWindow} of 90 days used in the 180 days ending ${human(depS)} `
       + `(${newCount} this trip, ${priorInWindow} earlier).`
       + (skipped.length ? ` ${skipped.length} prior stay(s) could not be read.` : ''),
-      '', 'EU 810/2008 Art. 15'));
+      '', 'see authority table'));
   }
   return out;
 }
@@ -733,12 +752,20 @@ export function runRules(src) {
   const app = flattenApp(src);
   const findings = [];
   for (const [id, category, fn] of RULES) {
-    try { findings.push(...(fn(app) ?? [])); }
-    catch (err) { findings.push(nf(id, 'na', `${category} check could not run`, String(err && err.message || err), 'Preflight internal error')); }
+    try {
+      for (const x of (fn(app) ?? [])) findings.push(withAuthority(x));
+    } catch (err) {
+      findings.push(withAuthority(nf(id, 'na', `${category} check could not run`, String(err && err.message || err), 'Preflight internal error')));
+    }
   }
   const tally = { fail: 0, warn: 0, pass: 0, na: 0 };
   for (const x of findings) tally[x.status] = (tally[x.status] || 0) + 1;
   const decided = tally.pass + tally.fail + tally.warn;
   const score = decided ? Math.round(((tally.pass + 0.5 * tally.warn) / decided) * 100) : 0;
-  return { findings, tally, score, rules: RULES.map(([id, category]) => ({ id, category })) };
+  return {
+    findings,
+    tally,
+    score,
+    rules: RULES.map(([id, category]) => ({ id, category, ...authorityFor(id) })),
+  };
 }
