@@ -1,0 +1,58 @@
+# Preflight — static deployment on this VPS.
+#
+# Three options were considered:
+#
+#   1. A plain `python3 -m http.server` on the host. Works, but it is unmanaged:
+#      no restart on reboot, no health check, and it would need to be remembered
+#      after every update. For something being shown to judges, "did the server
+#      die overnight" is not a risk worth carrying.
+#
+#   2. nginx:aptalpine as a container. Chosen. ~50 MB, no config to maintain,
+#      `--restart unless-stopped` so it survives a reboot, and Traefik already
+#      speaks to containers on this host so routing is a file rather than a
+#      rebuild of the reverse proxy.
+#
+#   3. Serving files straight from Traefik's file provider. Possible, but it
+#      would mean writing into Coolify's dynamically-generated config directory,
+#      which the next Coolify deploy can overwrite. Not worth the coupling.
+#
+# This runs on the internal Coolify network rather than publishing a port, so
+# the site is reachable only through Traefik on 80/443 with TLS — no second
+# unencrypted entry point on the VPS.
+services:
+  preflight:
+    image: nginx:1.27-alpine
+    container_name: preflight
+    restart: unless-stopped
+    networks:
+      - coolify
+    volumes:
+      # The built site. Read-only: the container serves files and never writes.
+      - /data/coolify/preflight:/usr/share/nginx/html:ro
+      # The config below replaces nginx's stock one.
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    # Traefik reaches the container on its internal port. Not published to the
+    # host, so nothing bypasses TLS.
+    expose:
+      - "80"
+    # Labels follow the same convention as the other containers on this host
+    # (see `homepage-*`), including the HTTP-to-HTTPS redirect and the Let's
+    # Encrypt resolver, so the certificate is automatic.
+    labels:
+      - traefik.enable=true
+      # A subdomain, not the root: hardest.qzz.io already serves the Homepage
+      # dashboard, and there is no reason to disturb it.
+      - traefik.http.routers.preflight.rule=Host(`preflight.hardest.qzz.io`)
+      - traefik.http.routers.preflight.entryPoints=https
+      - traefik.http.routers.preflight.tls=true
+      - traefik.http.routers.preflight.tls.certresolver=letsencrypt
+      # Plain HTTP exists only to redirect to HTTPS.
+      - traefik.http.routers.preflight-http.rule=Host(`preflight.hardest.qzz.io`)
+      - traefik.http.routers.preflight-http.entryPoints=http
+      - traefik.http.routers.preflight-http.middlewares=preflight-redirect
+      - traefik.http.middlewares.preflight-redirect.redirectscheme.scheme=https
+      - traefik.http.services.preflight.loadbalancer.server.port=80
+
+networks:
+  coolify:
+    external: true
