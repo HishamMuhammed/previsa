@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Deploy Preflight to this VPS.
+# Deploy Previsa to this VPS.
 #
 #   ./deploy/deploy.sh
 #
 # Builds the static site, copies it to the directory the nginx container mounts,
 # and recreates the container. Roughly ten seconds.
 #
-# The nginx container mounts /data/coolify/preflight read-only, so it cannot see
+# The nginx container mounts /data/coolify/previsa read-only, so it cannot see
 # the build directory — hence the copy. Everything is owned by UID 9999 (the
 # `nobody` user the nginx:alpine image runs as) because the container mounts the
 # directory read-only and cannot chown it from the inside.
@@ -18,8 +18,8 @@ set -euo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DEPLOY="$DIR/deploy"
-SERVE_DIR=/data/coolify/preflight
-COMPOSE_SERVICE=preflight
+SERVE_DIR=/data/coolify/previsa
+COMPOSE_SERVICE=previsa
 
 cd "$DIR"
 
@@ -41,9 +41,9 @@ sudo -n docker compose up -d --force-recreate
 echo "==> Verifying"
 for i in $(seq 1 12); do
   code=$(curl -sS --max-time 10 -o /dev/null -w "%{http_code}" \
-    https://preflight.hardest.qzz.io/ 2>/dev/null || echo 000)
+    https://previsa.hardest.qzz.io/ 2>/dev/null || echo 000)
   if [ "$code" = "200" ]; then
-    echo "    live: https://preflight.hardest.qzz.io/"
+    echo "    live: https://previsa.hardest.qzz.io/"
     exit 0
   fi
   sleep 2

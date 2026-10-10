@@ -144,7 +144,7 @@ export async function importPdf(buf, pdfjsLib) {
       return {
         ok: false,
         reason: 'encrypted',
-        message: 'This PDF is password-protected. Preflight cannot open it — '
+        message: 'This PDF is password-protected. Previsa cannot open it — '
           + 're-export it without a password, or enter the password here.',
       };
     }
@@ -166,6 +166,6 @@ export async function importPdf(buf, pdfjsLib) {
 /** The message shown when a PDF has pages but no extractable text. */
 export const NO_TEXT_MESSAGE =
   'This PDF has no text layer — it is a scan or a photo of a document. '
-  + 'Preflight can only read PDFs that contain selectable text, so it has nothing '
+  + 'Previsa can only read PDFs that contain selectable text, so it has nothing '
   + 'to extract from this one. Re-export or print-to-PDF from the original to get a '
   + 'text version.';

@@ -1,4 +1,4 @@
-/* Preflight — "archival file" visual language.
+/* Previsa — "archival file" visual language.
  *
  * The subject is a paper visa application that a consular officer reads by eye.
  * So: paper, ink, rubber stamps, typewriter monospace. Light, not a dark SaaS
@@ -955,7 +955,7 @@ body{
 }
 
 /* --- header fixes -------------------------------------------------------
- * The brand was one run-on line ("Preflightvisa application pre-flight
+ * The brand was one run-on line ("Previsavisa application pre-flight
  * checker") because the mark and the two spans had no separation, and the header
  * overflowed horizontally because a whole sentence of meta.dateNote had been put
  * in a chip. Both are fixed structurally: the brand text stacks, the chips are

@@ -5,7 +5,7 @@
 # single-use by name, so a restart always means a new URL).
 set -uo pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PORT="${PREFLIGHT_REACT_PORT:-4173}"
+PORT="${PREVISA_REACT_PORT:-4173}"
 BIN="${CLOUDFLARED_BIN:-/tmp/cloudflared}"
 URLFILE="$DIR/tunnel-url.txt"
 LOG="$DIR/tunnel.log"

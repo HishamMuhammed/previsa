@@ -57,7 +57,7 @@ console.log('\nblank fields stay blank — it does not invent values:');
   ok(!fields.some((f) => /Jose|Menon|Smurnova/.test(f.value)), 'no value is invented for empty boxes');
 }
 
-console.log('\nfields map onto Preflight names:');
+console.log('\nfields map onto Previsa names:');
 {
   ok(SCHENGEN_FIELD_MAP[13] === 'passportNumber', 'field 13 maps to passportNumber');
   ok(SCHENGEN_FIELD_MAP[31] === 'arrivalDate', 'field 31 maps to arrivalDate');

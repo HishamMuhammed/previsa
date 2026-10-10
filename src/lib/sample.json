@@ -8,7 +8,7 @@
       { "from": "2026-03-02", "to": "2026-03-22", "label": "Italy" },
       { "from": "2026-09-05", "to": "2026-09-19", "label": "Germany" }
     ],
-    "dateNote": "Slash-form dates on statements and bookings are read as DD/MM/YYYY. Where both readings are valid and different, Preflight flags it rather than guessing."
+    "dateNote": "Slash-form dates on statements and bookings are read as DD/MM/YYYY. Where both readings are valid and different, Previsa flags it rather than guessing."
   },
   "trip": {
     "destinationCountry": "schengen",

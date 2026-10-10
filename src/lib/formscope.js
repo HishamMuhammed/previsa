@@ -27,7 +27,7 @@ export const FORM_FIELD_OWNERS = {
 
 /**
  * Positional field name -> the field name the document actually uses.
- * Only entries whose name differs between the form and Preflight's schema.
+ * Only entries whose name differs between the form and Previsa's schema.
  */
 export const FIELD_ALIASES = {
   firstNames: 'givenNames',
@@ -44,7 +44,7 @@ export const FIELD_ALIASES = {
  * maps to its own name, and is then filtered out if the document does not have it.
  */
 const AMBIGUOUS = {
-  // The form asks for occupation AND employer; Preflight's application document
+  // The form asks for occupation AND employer; Previsa's application document
   // records the applicant's employer name in a single field.
   occupation: 'employerName',
   employerAddress: 'addressLine',
@@ -64,7 +64,7 @@ const AMBIGUOUS = {
  * nobody has described is how a visa applicant's name ends up in a hotel booking.
  *
  * `available` is the document's real field list. Filtering against it is not
- * optional: the form carries thirty numbered fields and Preflight's application
+ * optional: the form carries thirty numbered fields and Previsa's application
  * document models sixteen. Without this, Apply would write nine phantom keys
  * (`surnameAtBirth`, `civilStatus`, `priorVisas`, ...) into the saved state — values
  * nothing reads, silently corrupting the export and lying about what was filled.

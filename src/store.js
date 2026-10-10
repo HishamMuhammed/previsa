@@ -17,8 +17,8 @@ import { extractFormFields, SCHENGEN_FIELD_MAP, looksLikeValue } from './lib/for
 import { scopeToDocument } from './lib/formscope.js';
 import { cleanFormValue } from './lib/formvalue.js';
 
-const APP_KEY = 'preflight-application';
-const MULTI_KEY = 'preflight-multi';
+const APP_KEY = 'previsa-application';
+const MULTI_KEY = 'previsa-multi';
 
 // ---------------------------------------------------------------- persistence
 
@@ -198,7 +198,7 @@ function reducer(state, action) {
 
 // ---------------------------------------------------------------- store hook
 
-export function usePreflight() {
+export function usePrevisa() {
   const [state, dispatch] = useReducer(reducer, undefined, initialState);
 
   // Autosave on every edit, debounced through a ref so a fast typist does not

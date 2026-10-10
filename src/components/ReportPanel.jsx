@@ -1,4 +1,4 @@
-// The Preflight report: every finding, filterable, each naming the rule that
+// The Previsa report: every finding, filterable, each naming the rule that
 // produced it.
 //
 // A compliance tool that says "something might be wrong" is worse than useless, so
@@ -37,7 +37,7 @@ export default function ReportPanel({ report, filter, onFilter }) {
 
   return (
     <section className="panel">
-      <h2 className="panel-h">Preflight report</h2>
+      <h2 className="panel-h">Previsa report</h2>
       <p className="panel-note">Every finding names the rule that produced it, so you can check it yourself.</p>
 
       <div className="filters" role="group" aria-label="Filter findings">

@@ -1,4 +1,4 @@
-// Preflight rule engine.
+// Previsa rule engine.
 //
 // Every rule is a pure function (app, check) -> one or more findings. No model, no
 // network, no randomness: the same application always produces the same report, and
@@ -188,7 +188,7 @@ function dateAmbiguity(app) {
   if (hits.length) {
     out.push(f('R04', 'fail', 'Ambiguous numeric dates',
       hits.map((h) => `${h.doc} · ${h.field}: "${h.raw}"`).join('; ') +
-      `. Preflight is reading these as ${app.meta?.dateOrder === 'mdy' ? 'MM/DD/YYYY' : 'DD/MM/YYYY'}, but both readings are valid and they are not the same day. An officer who reads it the other way sees a different travel date, which then contradicts the rest of your file.`,
+      `. Previsa is reading these as ${app.meta?.dateOrder === 'mdy' ? 'MM/DD/YYYY' : 'DD/MM/YYYY'}, but both readings are valid and they are not the same day. An officer who reads it the other way sees a different travel date, which then contradicts the rest of your file.`,
       'Rewrite every numeric date as 14 Feb 2027 or 2027-02-14. Never leave a bare slash date in a visa file.',
       'ISO 8601 or spelled-out months remove all ambiguity'));
   } else {
@@ -332,7 +332,7 @@ function applicationWindow(app) {
   const sub = iso(app.docs.application.fields.submissionDate) || iso(app.meta.submissionDate);
   if (!arr) return [nf('R06', 'na', 'Application timing', 'Arrival date is missing.', 'Consular appointment rules')];
   if (!sub) return [nf('R06', 'na', 'Application timing',
-    'No submission date on the application. Preflight cannot check how early you applied.', 'Many consulates accept applications up to six months before travel')];
+    'No submission date on the application. Previsa cannot check how early you applied.', 'Many consulates accept applications up to six months before travel')];
   const d = daysBetween(sub, arr);
   if (!Number.isFinite(d)) return [nf('R06', 'na', 'Application timing',
     'Submission or arrival date could not be compared as a date.', 'Many consulates accept applications up to six months before travel')];
@@ -722,7 +722,7 @@ export function runRules(src) {
     try {
       for (const x of (fn(app) ?? [])) findings.push(withAuthority(x));
     } catch (err) {
-      findings.push(withAuthority(nf(id, 'na', `${category} check could not run`, String(err && err.message || err), 'Preflight internal error')));
+      findings.push(withAuthority(nf(id, 'na', `${category} check could not run`, String(err && err.message || err), 'Previsa internal error')));
     }
   }
   const tally = { fail: 0, warn: 0, pass: 0, na: 0 };

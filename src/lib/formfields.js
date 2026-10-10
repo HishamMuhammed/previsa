@@ -254,7 +254,7 @@ export function looksLikeValue(text) {
 }
 
 /**
- * Map harmonised Schengen form field numbers onto Preflight's field names.
+ * Map harmonised Schengen form field numbers onto Previsa's field names.
  * Numbers are stable across the EU harmonised form and its national variants.
  */
 export const SCHENGEN_FIELD_MAP = {

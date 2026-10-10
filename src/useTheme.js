@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-const THEME_KEY = 'preflight-theme';
+const THEME_KEY = 'previsa-theme';
 
 const mq = typeof window !== 'undefined' && window.matchMedia
   ? window.matchMedia('(prefers-color-scheme: dark)')

@@ -5,7 +5,7 @@
 // a render-blocking round trip.
 (function () {
   try {
-    var stored = localStorage.getItem('preflight-theme');
+    var stored = localStorage.getItem('previsa-theme');
     var dark = stored === 'dark'
       || ((!stored || stored === 'auto') &&
           window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);

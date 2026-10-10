@@ -63,7 +63,7 @@ const SOURCES = {
   R04: {
     kind: 'consistency',
     cite: 'Date disambiguation',
-    note: 'A date like 05/06/2027 is either 5 June or 6 May. Where both readings are valid and different, Preflight says so rather than guessing which one was meant.',
+    note: 'A date like 05/06/2027 is either 5 June or 6 May. Where both readings are valid and different, Previsa says so rather than guessing which one was meant.',
   },
   R05: {
     kind: 'consistency',

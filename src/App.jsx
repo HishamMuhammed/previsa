@@ -1,5 +1,5 @@
 import { useMemo, useCallback, useEffect, useRef, useState } from 'react';
-import { usePreflight } from './store.js';
+import { usePrevisa } from './store.js';
 import { useTheme } from './useTheme.js';
 import { badFieldsByDoc, failCountByDoc, fixRows, graphEdges } from './derive.js';
 import ScoreHeader from './components/ScoreHeader.jsx';
@@ -16,7 +16,7 @@ import PdfImport from './components/PdfImport.jsx';
 const THEME_WORD = { auto: 'Auto', light: 'Light', dark: 'Dark' };
 
 export default function App() {
-  const { state, report, actions } = usePreflight();
+  const { state, report, actions } = usePrevisa();
   const { choice, cycle } = useTheme();
   const [dragOver, setDragOver] = useState(false);
   const loadRef = useRef(null);
@@ -109,7 +109,7 @@ export default function App() {
     const blob = new Blob([JSON.stringify(app, null, 2)], { type: 'application/json' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'preflight-application.json';
+    a.download = 'previsa-application.json';
     a.click();
     URL.revokeObjectURL(a.href);
   }
@@ -125,7 +125,7 @@ export default function App() {
         actions.load(parsed);
         actions.setStatus({ text: `Loaded ${file.name}. Every check has re-run.`, tone: 'good' });
       } catch {
-        actions.setStatus({ text: 'That file is not a Preflight export — it needs "docs" and "trip".', tone: 'bad' });
+        actions.setStatus({ text: 'That file is not a Previsa export — it needs "docs" and "trip".', tone: 'bad' });
       }
     };
     reader.readAsText(file);
@@ -139,8 +139,11 @@ export default function App() {
         <div className="brand">
           <span className="brand-mark" aria-hidden="true">✓</span>
           <span className="brand-text">
-            <strong>Preflight</strong>
-            <span className="brand-sub">visa application pre-flight checker</span>
+            <strong>Previsa</strong>
+            {/* "visa application pre-flight checker" — the word "visa" is already in
+                the product name now, so this was reading "Previsavisa application…".
+                Dropped the duplicate. */}
+            <span className="brand-sub">application pre-flight checker</span>
           </span>
         </div>
         <div className="topbar-right">
@@ -277,7 +280,7 @@ export default function App() {
               header where it made the bar overflow. */}
           <p className="foot-note">{app.meta?.dateNote}</p>
           <p>
-            Preflight checks internal consistency. It does not predict a visa decision, and a clean
+            Previsa checks internal consistency. It does not predict a visa decision, and a clean
             report is not a guarantee of one. Documents never leave this page.
           </p>
         </footer>

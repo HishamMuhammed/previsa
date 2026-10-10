@@ -11,7 +11,7 @@
 
 import { runRules } from './rules.js';
 
-export const SNAP_KEY = 'preflight-snapshots';
+export const SNAP_KEY = 'previsa-snapshots';
 
 export function loadSnapshots() {
   try {

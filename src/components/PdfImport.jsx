@@ -1,6 +1,6 @@
 // PDF import: choose a document, read it, get editable suggestions.
 //
-// The one rule this panel enforces without exception: Preflight SUGGESTS, it never
+// The one rule this panel enforces without exception: Previsa SUGGESTS, it never
 // fills. Every value arrives in an input the user must inspect, edit if wrong, and
 // explicitly apply. An auto-filling tool for visa paperwork is a tool that can
 // quietly introduce the exact inconsistency it exists to catch.
@@ -94,7 +94,7 @@ export default function PdfImport({ state, report, actions }) {
     }
 
     actions.imported(importDoc, { doc: importDoc, best, formFields }, {
-      text: `${text}. Check each suggestion before applying — Preflight does not fill anything in on its own.`,
+      text: `${text}. Check each suggestion before applying — Previsa does not fill anything in on its own.`,
       tone: 'idle',
     });
     setBusy(false);
@@ -126,7 +126,7 @@ export default function PdfImport({ state, report, actions }) {
       <h2 className="panel-h">Import a document</h2>
       <p className="panel-note">
         Reads the text layer of a hotel booking, flight itinerary, bank statement, or a numbered
-        visa application form — by layout, not OCR. Preflight suggests values; it never fills one
+        visa application form — by layout, not OCR. Previsa suggests values; it never fills one
         in on its own.
       </p>
 
@@ -189,7 +189,7 @@ export default function PdfImport({ state, report, actions }) {
 
       {pendingImport.doc && best.length === 0 && status.text && !busy && (
         <div className="pdf-note">
-          <p><strong>Preflight read this PDF but could not find any labelled fields or numbered
+          <p><strong>Previsa read this PDF but could not find any labelled fields or numbered
           form fields in it.</strong></p>
           <p>Import reads booking confirmations, flight itineraries and bank statements, and
           reads numbered application forms (EU harmonised and national variants) by their layout.

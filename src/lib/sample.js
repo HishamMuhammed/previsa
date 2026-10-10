@@ -20,7 +20,7 @@ export const SAMPLE_APPLICATION = {
         "label": "Germany"
       }
     ],
-    "dateNote": "Slash-form dates on statements and bookings are read as DD/MM/YYYY. Where both readings are valid and different, Preflight flags it rather than guessing."
+    "dateNote": "Slash-form dates on statements and bookings are read as DD/MM/YYYY. Where both readings are valid and different, Previsa flags it rather than guessing."
   },
   "trip": {
     "arrivalDate": "2027-02-14",
