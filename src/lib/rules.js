@@ -15,6 +15,7 @@ import {
   isSlash, isGenuinelyAmbiguous, normNameKey, normKey, normAddr, money,
 } from './dates.js';
 import { authorityFor, AUTHORITY } from './authority.js';
+import { requirementsFor } from './requirements.js';
 
 const blank = (v) => v == null || String(v).trim() === '';
 const num = (v) => {
@@ -576,53 +577,19 @@ function priorVisaHistory(app) {
 // "not checked" that they had forgotten something. A consulate rejects that
 // application on receipt.
 //
-// So completeness is checked first and explicitly. Two distinct cases:
-//
-//   absent  - the document is not in the application at all. Always a fail.
-//   present - the document exists but has no usable fields. A fail too, because
-//             an imported PDF that yielded nothing looks identical to a
-//             half-finished form from the outside, and both need the same
-//             response: go and get the document.
-//
-// Required vs conditional matters. Insurance and accommodation are not required
-// for every destination, so demanding them unconditionally would be the same
-// class of error as the one this rule fixes — a confident wrong answer.
-
-/** Documents every application needs, whatever the destination. */
-const ALWAYS_REQUIRED = [
-  ['passport', 'Passport bio page'],
-  ['application', 'Signed application form'],
-];
-
-/** Documents required only for particular destinations. */
-const CONDITIONAL_DOCS = [
-  ['schengen', [['insurance', 'Travel medical insurance'],
-                ['accommodation', 'Proof of accommodation'],
-                ['bankStatement', 'Bank statement'],
-                ['itinerary', 'Flight itinerary']]],
-  ['uk',       [['bankStatement', 'Bank statement'],
-                ['employment', 'Employment or study letter'],
-                ['accommodation', 'Proof of accommodation']]],
-  ['us',       [['itinerary', 'Flight itinerary'],
-                ['employment', 'Employment letter'],
-                ['bankStatement', 'Bank statement']]],
-];
+// The requirement lists live in requirements.js so the destination checklist panel
+// cannot disagree with this rule about what is needed.
 
 function documentCompleteness(app) {
   const dest = destinationKey(app);
-  const wanted = [
-    ...ALWAYS_REQUIRED,
-    ...(CONDITIONAL_DOCS.find(([k]) => k === dest)?.[1] ?? []),
-  ];
+  const wanted = requirementsFor(dest);
 
   const missing = [];
-  const empty = [];
-  for (const [key, label] of wanted) {
+  for (const { key, label } of wanted) {
     // flattenApp synthesises an empty stub for every known document, so presence
     // cannot be tested with `!app.docs[key]`. A stub is identified by having no
     // field with a value; a document the applicant actually supplied has at least
-    // one. Checking `key in srcDocs` instead would be clearer, but the rule only
-    // receives the flattened app.
+    // one.
     const doc = app.docs[key];
     const hasValue = doc && Object.values(doc.fields ?? {}).some((v) => !blank(v));
     if (!hasValue) missing.push(label);

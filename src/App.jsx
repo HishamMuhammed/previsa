@@ -3,6 +3,7 @@ import { usePreflight } from './store.js';
 import { useTheme } from './useTheme.js';
 import { badFieldsByDoc, failCountByDoc, fixRows, graphEdges } from './derive.js';
 import ScoreHeader from './components/ScoreHeader.jsx';
+import Checklist from './components/Checklist.jsx';
 import DocPanel from './components/DocPanel.jsx';
 import ReportPanel from './components/ReportPanel.jsx';
 import FixList from './components/FixList.jsx';
@@ -138,9 +139,10 @@ export default function App() {
 
         <div className="cols">
           <div className="col col-docs">
+            {/* No "Application documents" heading: the fix list below is the entry
+                point to this column, and the checklist lives with the report on
+                the right, where it does not push the editable panels below the fold. */}
             <section className="panel">
-              <h2 className="panel-h">Application documents</h2>
-              <p className="panel-note">Click any value to edit it. Every check re-runs as you type.</p>
 
               <FixList rows={rows} blocking={blocking} onGoTo={goToField} />
 
@@ -168,6 +170,13 @@ export default function App() {
           </div>
 
           <div className="col col-report">
+            {/* The checklist sits with the report, not above the document panels.
+                It is summary information: it tells you what is missing and what has
+                findings, which is the same kind of statement the report makes. Above
+                the panels it cost 261px and pushed the editable documents — the part
+                worth demonstrating — below the fold on a 633px viewport, which is
+                the exact failure the fix list was collapsed to fix. */}
+            <Checklist app={app} report={report} onGoTo={goToField} />
             <ReportPanel report={report} filter={filter} onFilter={actions.setFilter} />
           </div>
         </div>

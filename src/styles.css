@@ -472,13 +472,14 @@ body{
      deliberately NOT in this list — the disclaimer is the one thing that must
      survive onto paper. */
   .topbar-right,.filters,#graph,
-  .fx-toggle,.file-row,.pdf-drop,.masthead-actions,
+  .fx-toggle,.file-row,.pdf-drop,.masthead-actions,.ck-toggle,
   .doc-h .caret{display:none !important}
 
-  /* The fix list prints as its rows, not as a "Show the list" button that cannot
-     be pressed on paper. The list is always in the DOM and hidden by CSS when
-     collapsed, so print only has to un-hide it. */
-  .fx .fx-list,.fx .fx-list[data-collapsed="true"]{display:block !important}
+  /* The fix list and the checklist print as their rows, not as "Show the list"
+     buttons that cannot be pressed on paper. Both are always in the DOM and hidden
+     by CSS when collapsed, so print only has to un-hide them. */
+  .fx .fx-list,.fx .fx-list[data-collapsed="true"],
+  .ck-list,.ck-list[data-collapsed="true"]{display:block !important}
 
   body{background:#fff;color:#000}
 
@@ -529,7 +530,11 @@ body{
 /* --- the score is the hero; it was previously the same size as body text --- */
 .score-value{
   font-family:var(--serif);
-  font-size:clamp(3.4rem, 9vw, 5.6rem);
+  /* Capped lower than it was. The score is still the hero — this is display type —
+     but at 5.6rem it made the header 198px, which pushed the document panels below
+     the fold once the checklist was added. 4.2rem keeps the hierarchy and gives
+     back ~40px. */
+  font-size:clamp(2.8rem, 7vw, 4.2rem);
   font-weight:600;
   line-height:.86;
   letter-spacing:-.045em;
@@ -588,6 +593,76 @@ body{
    check simply did not run — so it must not borrow the stamp red reserved for
    blocking failures. A muted segment that reads as an absence, not an alarm. */
 .tally-seg.skipped{background:var(--paper-3);color:var(--ink-3);border:1px dashed var(--rule-2)}
+
+/* ================================================================= checklist */
+/* Deliberately tight. This sits above the fix list and the document panels, and
+   the panels must stay above the fold — the whole reason the fix list is collapsed.
+   A checklist costing 200px re-creates the problem it was added to solve, so it is
+   a single header line plus single-line rows: no heading/note pair, no per-item
+   prose, no footer restating the caveat. */
+.checklist{margin:0 0 1.1rem}
+.ck-head{
+  display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+  margin:0 0 8px;
+  font:11.5px/1.5 var(--sans);color:var(--ink-2);
+}
+.ck-head strong{
+  font-family:var(--serif);font-size:17px;font-weight:600;
+  letter-spacing:-.2px;color:var(--ink);
+}
+.ck-count{font:10.5px/1 var(--mono);color:var(--ink-3)}
+/* The caveat lives in the header rather than a footer, so it is read before the
+   rows are — and so the count cannot be mistaken for a readiness score. */
+.ck-caveat{
+  margin-left:auto;font:9.5px/1 var(--sans);letter-spacing:.07em;
+  text-transform:uppercase;color:var(--ink-3);
+}
+.ck-toggle{
+  flex:none;background:none;border:1px solid var(--rule-2);
+  font:9.5px/1 var(--sans);letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-2);padding:4px 7px;cursor:pointer;
+}
+.ck-toggle:hover{background:var(--paper-3);color:var(--ink)}
+.ck-toggle:focus-visible{outline:2px solid var(--stamp);outline-offset:1px}
+.ck-list{list-style:none;margin:0;padding:0;border-top:var(--hair) solid var(--rule)}
+/* Collapsed only when there is nothing to say. Hidden by CSS so print can reveal
+   it, the same way the fix list does. */
+.ck-list[data-collapsed="true"]{display:none}
+.ck-item{
+  display:flex;align-items:center;gap:9px;
+  padding:5px 2px 6px;
+  border-bottom:1px solid var(--rule);
+  font:12px/1.4 var(--sans);
+}
+/* The box is a state marker, not a decorative bullet: em dash for absent, an
+   exclamation for present-but-wrong, a tick only when the document is clear.
+   Three states, because "I have it" and "I have it and it is right" are different
+   facts and the difference is the entire value of the panel. */
+.ck-box{
+  flex:none;width:15px;height:15px;
+  display:grid;place-items:center;
+  font:600 10px/1 var(--mono);
+  border:1px solid var(--rule-2);color:var(--ink-3);
+}
+.ck-item.ok .ck-box{border-color:var(--ok);color:var(--ok)}
+.ck-item.problem .ck-box{border-color:var(--stamp);color:var(--stamp)}
+.ck-item.missing .ck-box{border-style:dashed}
+.ck-label{color:var(--ink);font-weight:500}
+.ck-item.missing .ck-label{color:var(--ink-2)}
+/* Marks a conditional requirement, so a UK applicant does not wonder why insurance
+   is not on their list. */
+.ck-cond{
+  font:9px/1 var(--sans);letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);border:1px solid var(--rule);padding:3px 4px;flex:none;
+}
+.ck-state{margin-left:auto;flex:none;font:10.5px/1 var(--mono);color:var(--ink-3)}
+.ck-item.problem .ck-state{color:var(--stamp)}
+.ck-jump{
+  flex:none;background:none;border:0;padding:0 0 0 4px;cursor:pointer;
+  font:11px/1 var(--sans);color:var(--ink-2);
+}
+.ck-jump:hover{color:var(--ink);text-decoration:underline}
+.ck-jump:focus-visible{outline:2px solid var(--stamp);outline-offset:2px}
 
 /* --- fix list: the payoff view, so it reads as instructions --- */
 /* The fix list is a set of links, not a second set of inputs.
