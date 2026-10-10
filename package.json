@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --port 4173 --host",
-    "test": "node test/rules.test.mjs && node test/extract.test.mjs && node test/rolling180.test.mjs && node test/pdf.test.mjs && node test/real-docs.test.mjs && node test/formfields.test.mjs && node test/formfields-quality.test.mjs && node test/formvalue.test.mjs && node test/form-routing.test.mjs && node test/destination.test.mjs && node test/completeness.test.mjs && node test/authority.test.mjs && node test/requirements.test.mjs",
+    "test": "node test/rules.test.mjs && node test/extract.test.mjs && node test/rolling180.test.mjs && node test/pdf.test.mjs && node test/real-docs.test.mjs && node test/formfields.test.mjs && node test/formfields-quality.test.mjs && node test/formvalue.test.mjs && node test/form-routing.test.mjs && node test/destination.test.mjs && node test/completeness.test.mjs && node test/authority.test.mjs && node test/requirements.test.mjs && node test/snapshots.test.mjs",
     "fuzz": "node tools/fuzz-rules.mjs 2500"
   },
   "keywords": [],

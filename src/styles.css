@@ -473,7 +473,7 @@ body{
      survive onto paper. */
   .topbar-right,.filters,#graph,
   .fx-toggle,.file-row,.pdf-drop,.masthead-actions,.ck-toggle,
-  .apbar,
+  .apbar,.snap-panel,
   .doc-h .caret{display:none !important}
 
   /* The fix list and the checklist print as their rows, not as "Show the list"
@@ -723,6 +723,70 @@ body{
 .apbar-note{
   margin:.5rem 0 0;font:11px/1.5 var(--sans);color:var(--ink-3);max-width:62ch;
 }
+
+/* ================================================================= snapshots */
+/* The audit panel: save a copy, diff two. It sits below the report, so it is
+   compact — a list of saved snapshots and a diff output. */
+.snap-panel{margin-top:0}
+.snap-list{list-style:none;margin:0 0 10px;padding:0;border-top:var(--hair) solid var(--rule)}
+.snap-empty{padding:8px 0;font:12px/1.4 var(--sans);color:var(--ink-3)}
+.snap-item{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 2px;
+  border-bottom:1px solid var(--rule);
+  font:12px/1.4 var(--sans);
+}
+.snap-radio{display:inline-flex;gap:4px;flex:none}
+.snap-radio input{accent-color:var(--stamp)}
+.snap-name{flex:1;min-width:0;font-weight:500;color:var(--ink);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.snap-score{font:11px/1 var(--mono);color:var(--ink-3);flex:none}
+.snap-item .snap-del{
+  flex:none;background:none;border:1px solid var(--rule);width:20px;height:20px;
+  font:12px/1 var(--sans);color:var(--ink-3);cursor:pointer;padding:0;
+  display:grid;place-items:center;
+}
+.snap-item .snap-del:hover{border-color:var(--stamp);color:var(--stamp)}
+.snap-add{
+  background:none;border:1px dashed var(--rule-2);padding:6px 12px;
+  font:11px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-3);cursor:pointer;transition:color .12s var(--ease);
+}
+.snap-add:hover{color:var(--ink);border-style:solid}
+.snap-add:focus-visible{outline:2px solid var(--stamp);outline-offset:2px}
+.snap-form{display:flex;gap:6px;align-items:center;margin:6px 0 10px}
+.snap-input{
+  font:12px/1.4 var(--mono);padding:6px 8px;
+  border:1px solid var(--rule);background:var(--paper-2);color:var(--ink);
+  width:160px;
+}
+.snap-ok{
+  background:none;border:1px solid var(--rule-2);padding:6px 10px;
+  font:11px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink-3);cursor:pointer;
+}
+.snap-ok:hover{color:var(--ink);background:var(--paper-3)}
+.snap-diff{margin-top:10px}
+.snap-hint{font:12px/1.5 var(--sans);color:var(--ink-3);margin:0}
+.snap-diff-h{
+  margin:0 0 6px;font:600 13px/1.4 var(--sans);color:var(--ink);
+  border-top:var(--hair) solid var(--rule);padding-top:8px;
+}
+.snap-diff-score{font:11px/1 var(--mono);color:var(--ink-3);margin-left:6px}
+.snap-same{font:12px/1.5 var(--sans);color:var(--ok);margin:4px 0 0}
+.snap-diff-list{list-style:none;margin:0;padding:0}
+.snap-row{
+  display:flex;align-items:baseline;gap:8px;
+  padding:4px 2px;
+  border-bottom:1px solid var(--rule);
+  font:11px/1.4 var(--mono);
+}
+.snap-row.added .snap-action{color:var(--ok)}
+.snap-row.removed .snap-action{color:var(--stamp)}
+.snap-row.changed .snap-action{color:var(--ink)}
+.snap-action{font:600 9px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;flex:none;width:56px}
+.snap-row-doc{color:var(--ink-2);flex:none}
+.snap-row-field{color:var(--ink);font-weight:600}
+.snap-row-change{color:var(--ink-3);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 /* --- fix list: the payoff view, so it reads as instructions --- */
 /* The fix list is a set of links, not a second set of inputs.

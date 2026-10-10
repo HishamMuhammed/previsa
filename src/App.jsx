@@ -5,6 +5,7 @@ import { badFieldsByDoc, failCountByDoc, fixRows, graphEdges } from './derive.js
 import ScoreHeader from './components/ScoreHeader.jsx';
 import Checklist from './components/Checklist.jsx';
 import ApplicantBar from './components/ApplicantBar.jsx';
+import SnapshotPanel from './components/SnapshotPanel.jsx';
 import DocPanel from './components/DocPanel.jsx';
 import ReportPanel from './components/ReportPanel.jsx';
 import FixList from './components/FixList.jsx';
@@ -236,6 +237,9 @@ export default function App() {
                 the exact failure the fix list was collapsed to fix. */}
             <Checklist app={app} report={report} onGoTo={goToField} />
             <ReportPanel report={report} filter={filter} onFilter={actions.setFilter} />
+            {/* The snapshot panel is audit tooling, not day-to-day checking — it sits
+                below the report, out of the way unless explicitly used. */}
+            <SnapshotPanel app={app} />
           </div>
         </div>
 

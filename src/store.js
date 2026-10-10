@@ -63,6 +63,8 @@ function saveMulti(state) {
   } catch { /* quota or private mode */ }
 }
 
+// Snapshots live in lib/snapshots.js — they are independent of the reducer state,
+// which is autosaved on every edit and would be overwritten before you could diff.
 // ---------------------------------------------------------------- initial state
 
 function initialState() {
@@ -262,3 +264,4 @@ export function usePreflight() {
 }
 
 export { APP_KEY, loadStored, save, saveMulti, loadMulti, cleanFormValue, extractFormFields, SCHENGEN_FIELD_MAP, looksLikeValue, scopeToDocument };
+export { loadSnapshots, saveSnapshot, deleteSnapshot, diffApps } from './lib/snapshots.js';
