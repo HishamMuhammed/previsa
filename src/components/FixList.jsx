@@ -20,8 +20,20 @@
 //
 // Clicking a row now jumps to the real field, opens its panel and highlights it.
 // One input per field, one place to edit it.
+//
+// The list is also COLLAPSED by default, which is what finally put the document
+// panels above the fold. The rows largely restate what is already on screen: the
+// panels with problems auto-open and their failing fields are outlined in red, so
+// a visitor can see what is wrong without reading a list of it. What the list adds
+// is a count and a one-click jump, and a count is one line — not 413px of rows
+// standing between the score and the work surface. Collapsed is ~50px, which moved
+// the first document panel from 854px to inside a 633px viewport.
+
+import { useState } from 'react';
 
 export default function FixList({ rows, blocking, onGoTo }) {
+  const [expanded, setExpanded] = useState(false);
+
   if (!rows.length) {
     return (
       <div className="fx-clear">
@@ -31,34 +43,50 @@ export default function FixList({ rows, blocking, onGoTo }) {
   }
 
   return (
-    <div className="fx">
+    <div className={`fx ${expanded ? 'is-open' : ''}`}>
       <div className={`fx-clear ${blocking ? 'has' : ''}`}>
         <span className="fx-count">{rows.length} edit{rows.length === 1 ? '' : 's'} to make</span>
         <p className="fx-sub">
           {blocking > 0
-            ? `${blocking} blocking error${blocking === 1 ? '' : 's'} — pick one and the document opens at the field.`
+            ? `${blocking} blocking error${blocking === 1 ? '' : 's'}.`
             : 'No blocking errors. Worth a look before you submit.'}
         </p>
+        {/* Stated as an action rather than left as an unexplained chevron, since
+            this toggle is what makes the panel ordering work. */}
+        <button
+          type="button"
+          className="fx-toggle"
+          aria-expanded={expanded}
+          onClick={() => setExpanded((v) => !v)}
+        >
+          {expanded ? 'Hide the list' : 'Show the list'}
+        </button>
       </div>
-      <ul className="fx-list">
-        {rows.map((r) => (
-          <li key={`${r.doc}.${r.field}`} className={`fx-row ${r.status}`}>
-            {/* A button, because it performs an action. Not a label+input: the
-                input already exists once, in the document panel. */}
-            <button
-              type="button"
-              className="fx-jump"
-              onClick={() => onGoTo(r.doc, r.field)}
-              aria-label={`Open ${r.docLabel ?? r.doc}, field ${r.field}. ${r.hint ?? ''}`}
-            >
-              <span className="fx-doc">{r.docTag ?? r.doc}</span>
-              <span className="fx-field">{r.field}</span>
-              <span className="rid">{r.id}</span>
-              <span className="fx-go" aria-hidden="true">→</span>
-            </button>
-          </li>
-        ))}
-      </ul>
+
+      {/* Not animated. A transition on the collapsed height is what silently broke
+          the document panels (see the comment on .doc .fields in styles.css), and
+          content-visibility is the honest mechanism for "hidden until asked for". */}
+      {expanded && (
+        <ul className="fx-list">
+          {rows.map((r) => (
+            <li key={`${r.doc}.${r.field}`} className={`fx-row ${r.status}`}>
+              {/* A button, because it performs an action. Not a label+input: the
+                  input already exists once, in the document panel. */}
+              <button
+                type="button"
+                className="fx-jump"
+                onClick={() => onGoTo(r.doc, r.field)}
+                aria-label={`Open ${r.docLabel ?? r.doc}, field ${r.field}. ${r.hint ?? ''}`}
+              >
+                <span className="fx-doc">{r.docTag ?? r.doc}</span>
+                <span className="fx-field">{r.field}</span>
+                <span className="rid">{r.id}</span>
+                <span className="fx-go" aria-hidden="true">→</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

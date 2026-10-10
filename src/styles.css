@@ -522,14 +522,17 @@ body{
    and made a screen reader announce "Flight itineraryfareEURR08" as the label for
    a fare field. One input per field, in one place: the document panel. */
 .fx{margin:0 0 1.25rem}
+/* Collapsed by default. The count, the one-line summary and the toggle share a
+   row so the collapsed state is ~50px rather than the 77px of the stacked
+   version. */
 .fx-clear{
-  padding:13px 15px;
+  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+  padding:11px 14px;
   background:var(--paper-2);
   border-left:3px solid var(--rule-2);
 }
 .fx-clear.has{border-left-color:var(--stamp);background:var(--stamp-soft)}
 .fx-count{
-  display:block;
   font-family:var(--serif);
   font-size:1.06rem;
   font-weight:600;
@@ -537,7 +540,17 @@ body{
   color:var(--ink);
 }
 .fx-clear.has .fx-count{color:var(--stamp)}
-.fx-sub{margin:.35rem 0 0;font:12.5px/1.5 var(--sans);color:var(--ink-2);max-width:62ch}
+.fx-sub{margin:0;font:12.5px/1.5 var(--sans);color:var(--ink-2)}
+.fx-toggle{
+  margin-left:auto;flex:none;
+  font:11px/1 var(--sans);letter-spacing:.04em;text-transform:uppercase;
+  color:var(--ink-2);background:none;
+  border:1px solid var(--rule-2);
+  padding:6px 10px;cursor:pointer;
+  transition:background .12s var(--ease),color .12s var(--ease);
+}
+.fx-toggle:hover{background:var(--paper-3);color:var(--ink)}
+.fx-toggle:focus-visible{outline:2px solid var(--stamp);outline-offset:1px}
 .fx-list{list-style:none;margin:0;padding:0}
 
 .fx-row{
