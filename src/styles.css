@@ -442,8 +442,53 @@ body{
   *{transition-duration:.01ms !important;animation-duration:.01ms !important}
 }
 @media print{
-  .masthead-actions,.filters,#graph,.foot{display:none}
-  body{background:#fff}
+  /* Nothing on screen is for print. Buttons, toggles, filters and the drop zone
+     are chrome: on paper they are dead links and empty boxes. The footer is
+     deliberately NOT in this list — the disclaimer is the one thing that must
+     survive onto paper. */
+  .topbar-right,.filters,#graph,
+  .fx-toggle,.file-row,.pdf-drop,.masthead-actions,
+  .doc-h .caret{display:none !important}
+
+  /* The fix list prints as its rows, not as a "Show the list" button that cannot
+     be pressed on paper. The list is always in the DOM and hidden by CSS when
+     collapsed, so print only has to un-hide it. */
+  .fx .fx-list,.fx .fx-list[data-collapsed="true"]{display:block !important}
+
+  body{background:#fff;color:#000}
+
+  /* Panels are collapsed on screen to keep the documents above the fold. Paper has
+     no fold, so everything prints open — a printed report with the findings hidden
+     behind a click is useless. */
+  .doc .fields,.doc.is-open .fields{content-visibility:visible}
+  .doc .fields>.fields-inner{overflow:visible}
+
+  /* A hairline border prints as a grey smear on most office printers; a rule is
+     the honest substitute. */
+  :root{--hair:0;--rule:#999;--rule-2:#666}
+
+  /* Two columns of documents and report become one, or the report is squeezed
+     into half a page width and every finding wraps to four lines. */
+  .cols{grid-template-columns:1fr !important}
+  .col+.col{border-left:0;border-top:1px solid var(--rule);padding-left:0}
+
+  /* Never split a finding or a document panel across a page break — a rule whose
+     title is on page 1 and its fix on page 2 is not actionable. */
+  .item,.doc,.fx-row{break-inside:avoid}
+  .panel{break-before:auto}
+
+  /* Links and buttons are chrome on paper. The fix rows are <button>s, so they
+     print with their default borders and backgrounds unless stripped. */
+  .fx-jump,.btn,.chip-btn{
+    background:none !important;border:0 !important;
+    padding:0 !important;color:#000 !important;
+  }
+  .fx-jump .fx-go{display:none}
+
+  /* A printed page with no provenance is not worth carrying to an appointment.
+     The footer already carries the disclaimer; give it room and a rule above. */
+  .foot{margin-top:24px;border-top:1px solid var(--rule);padding-top:10px}
+  .foot p{margin:0 0 4px;font-size:10px}
 }
 /* ================================================================= React additions
  * The vanilla app rendered one string of HTML; React renders the same elements
@@ -556,6 +601,10 @@ body{
 .fx-toggle:hover{background:var(--paper-3);color:var(--ink)}
 .fx-toggle:focus-visible{outline:2px solid var(--stamp);outline-offset:1px}
 .fx-list{list-style:none;margin:0;padding:0}
+/* Collapsed on screen. Hidden by CSS rather than not rendered, so print can
+   reveal it: a `{expanded && ...}` conditional leaves nothing in the DOM for
+   print CSS to display, and a printed fix list would be an empty gap. */
+.fx-list[data-collapsed="true"]{display:none}
 
 .fx-row{
   border-bottom:1px solid var(--rule);

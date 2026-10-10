@@ -63,30 +63,31 @@ export default function FixList({ rows, blocking, onGoTo }) {
         </button>
       </div>
 
-      {/* Not animated. A transition on the collapsed height is what silently broke
-          the document panels (see the comment on .doc .fields in styles.css), and
-          content-visibility is the honest mechanism for "hidden until asked for". */}
-      {expanded && (
-        <ul className="fx-list">
-          {rows.map((r) => (
-            <li key={`${r.doc}.${r.field}`} className={`fx-row ${r.status}`}>
-              {/* A button, because it performs an action. Not a label+input: the
-                  input already exists once, in the document panel. */}
-              <button
-                type="button"
-                className="fx-jump"
-                onClick={() => onGoTo(r.doc, r.field)}
-                aria-label={`Open ${r.docLabel ?? r.doc}, field ${r.field}. ${r.hint ?? ''}`}
-              >
-                <span className="fx-doc">{r.docTag ?? r.doc}</span>
-                <span className="fx-field">{r.field}</span>
-                <span className="rid">{r.id}</span>
-                <span className="fx-go" aria-hidden="true">→</span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      )}
+      {/* Rendered when expanded, OR when printing.
+          
+          `{expanded && ...}` is a render-time decision, so print CSS cannot reveal
+          a collapsed list — there is nothing in the DOM to display. The list is
+          therefore always in the DOM and hidden by CSS when collapsed, which
+          inverts the problem into one print CSS can solve. */}
+      <ul className="fx-list" data-collapsed={!expanded}>
+        {rows.map((r) => (
+          <li key={`${r.doc}.${r.field}`} className={`fx-row ${r.status}`}>
+            {/* A button, because it performs an action. Not a label+input: the
+                input already exists once, in the document panel. */}
+            <button
+              type="button"
+              className="fx-jump"
+              onClick={() => onGoTo(r.doc, r.field)}
+              aria-label={`Open ${r.docLabel ?? r.doc}, field ${r.field}. ${r.hint ?? ''}`}
+            >
+              <span className="fx-doc">{r.docTag ?? r.doc}</span>
+              <span className="fx-field">{r.field}</span>
+              <span className="rid">{r.id}</span>
+              <span className="fx-go" aria-hidden="true">→</span>
+            </button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
