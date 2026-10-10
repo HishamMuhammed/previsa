@@ -150,14 +150,32 @@ export function failCountByDoc(findings, app) {
   return out;
 }
 
+// Short label per document, used only in the fix list. The full label is on the
+// panel the row jumps to, so a long one there is fine; here it made every row wrap
+// to two lines and the list 680px instead of 340.
+const DOC_TAG = {
+  passport: 'PASSPORT',
+  application: 'APPLICATION',
+  itinerary: 'ITINERARY',
+  accommodation: 'HOTEL',
+  hostLetter: 'HOST',
+  bankStatement: 'BANK',
+  insurance: 'INSURANCE',
+  employment: 'EMPLOYMENT',
+};
+
 /**
  * One actionable row per implicated field.
  *
  * Sorted into document-panel order so the list reads in the same sequence as the
  * panels above it — a fix list that jumps around while the eye tracks down the
  * panels is harder to use than one that mirrors them.
+ *
+ * Rows carry no editor: the input lives once, in the document panel, and the row
+ * navigates to it. See the comment at the top of FixList.jsx for why a second set
+ * of inputs here was actively harmful.
  */
-export function fixRows(findings, app, onEdit) {
+export function fixRows(findings, app) {
   const seen = new Set();
   const rows = [];
   for (const f of findings) {
@@ -170,10 +188,10 @@ export function fixRows(findings, app, onEdit) {
         ...ref,
         value: app.docs?.[ref.doc]?.fields?.[ref.field] ?? '',
         docLabel: app.docs?.[ref.doc]?.label ?? ref.doc,
+        docTag: DOC_TAG[ref.doc] ?? String(ref.doc).toUpperCase(),
         id: f.id,
         status: f.status,
         hint: f.fix,
-        onEdit,
       });
     }
   }

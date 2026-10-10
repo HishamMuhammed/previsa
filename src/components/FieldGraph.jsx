@@ -7,11 +7,6 @@
 // Only 'fail' and 'warn' draw an edge. A passing rule must never paint a field
 // red; that was a real bug where R12b, which passes, drew a mismatch line.
 
-const GRAPH_FIELDS = [
-  ['fullName', 'Your name'],
-  ['passportNo', 'Passport number'],
-];
-
 export default function FieldGraph({ app, edges }) {
   const docs = Object.entries(app.docs ?? {});
   if (docs.length < 2) return null;

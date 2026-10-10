@@ -16,7 +16,7 @@ import { memo } from 'react';
  * @param {Set<string>} badFields  fields this document must fix (drives the red border)
  * @param {number} failCount how many fields need fixing
  */
-const DocPanel = memo(function DocPanel({ docKey, doc, isOpen, badFields, failCount, onToggle, onEdit }) {
+const DocPanel = memo(function DocPanel({ docKey, doc, isOpen, badFields, failCount, highlight, onToggle, onEdit }) {
   return (
     <div className={`doc ${isOpen ? 'is-open' : ''}`} data-doc={docKey}>
       <div
@@ -49,16 +49,21 @@ const DocPanel = memo(function DocPanel({ docKey, doc, isOpen, badFields, failCo
       <div className="fields">
         <div className="fields-inner">
           <div className="fields-pad">
-            {Object.entries(doc.fields).map(([field, value]) => (
-              <div key={field} className={`field ${badFields.has(field) ? 'is-bad' : ''}`}>
-                <label htmlFor={`i-${docKey}-${field}`}>{field}</label>
-                <input
-                  id={`i-${docKey}-${field}`}
-                  value={value ?? ''}
-                  onChange={(e) => onEdit(docKey, field, e.target.value)}
-                />
-              </div>
-            ))}
+            {Object.entries(doc.fields).map(([field, value]) => {
+              // The field the fix list pointed at gets a visible ring until the
+              // user edits something, so the jump is not just a scroll.
+              const isHot = highlight && highlight.doc === docKey && highlight.field === field;
+              return (
+                <div key={field} className={`field ${badFields.has(field) ? 'is-bad' : ''} ${isHot ? 'is-hot' : ''}`}>
+                  <label htmlFor={`i-${docKey}-${field}`}>{field}</label>
+                  <input
+                    id={`i-${docKey}-${field}`}
+                    value={value ?? ''}
+                    onChange={(e) => onEdit(docKey, field, e.target.value)}
+                  />
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

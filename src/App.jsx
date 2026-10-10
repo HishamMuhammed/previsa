@@ -22,9 +22,51 @@ export default function App() {
   const badFields = useMemo(() => badFieldsByDoc(report.findings, app), [report, app]);
   const failCounts = useMemo(() => failCountByDoc(report.findings, app), [report, app]);
   const onEdit = useCallback((doc, field, value) => actions.edit(doc, field, value), [actions]);
-  const rows = useMemo(() => fixRows(report.findings, app, onEdit), [report, app, onEdit]);
+  const rows = useMemo(() => fixRows(report.findings, app), [report, app]);
   const edges = useMemo(() => graphEdges(report.findings, app), [report, app]);
   const blocking = rows.filter((r) => r.status === 'fail').length;
+
+  // The field the fix list is pointing at, so the document panel can open it,
+  // scroll to it and highlight it. Held here rather than in the panel because both
+  // the list and the panel need to agree on it.
+  const [highlight, setHighlight] = useState(null);
+
+  const goToField = useCallback((doc, field) => {
+    // Open the panel FIRST: scrolling to an input inside a collapsed document
+    // scrolls to a zero-height box and looks like nothing happened.
+    if (!openDocs.has(doc)) actions.toggleDoc(doc);
+    setHighlight({ doc, field });
+  }, [openDocs, actions]);
+
+  // Scroll and focus once the panel is actually open and the input exists.
+  //
+  // Order matters and was determined by measuring, not reasoning:
+  //
+  //   1. focus({preventScroll:true}) FIRST, because content-visibility:hidden
+  //      (the collapse mechanism) makes a hidden subtree report a zero-height box,
+  //      so scrollIntoView on a just-collapsed field scrolls nowhere. Focusing
+  //      first forces the element to be laid out, and only then does it have a real
+  //      position to scroll to.
+  //   2. scrollIntoView WITHOUT preventScroll on the focus call, or the browser
+  //      treats the whole jump as a no-op and the page never moves.
+  //
+  // behavior is 'instant', not 'smooth'. Smooth scrolling is unreliable here:
+  // measured on the deployed build, the smooth scroll never started at all — the
+  // page stayed at scrollY 0 with the target frozen 1856px down the viewport,
+  // while the identical call with 'instant' scrolled correctly to 1557 and
+  // centred the field. The jump is a correction, not a flourish, and a correction
+  // that silently fails is worse than one that appears abruptly.
+  //
+  // The click handler alone is not enough: React commits the panel-open and the
+  // highlight together, so anything run synchronously in the handler measures the
+  // panel before it has its height. An effect runs after commit.
+  useEffect(() => {
+    if (!highlight) return;
+    const input = document.getElementById(`i-${highlight.doc}-${highlight.field}`);
+    if (!input) return;
+    input.focus({ preventScroll: true });
+    input.scrollIntoView({ behavior: 'instant', block: 'center' });
+  }, [highlight, openDocs]);
 
   // Open the documents that have problems on first load, so the applicant never
   // has to hunt for a red field hidden inside a collapsed panel.
@@ -100,7 +142,7 @@ export default function App() {
               <h2 className="panel-h">Application documents</h2>
               <p className="panel-note">Click any value to edit it. Every check re-runs as you type.</p>
 
-              <FixList rows={rows} blocking={blocking} />
+              <FixList rows={rows} blocking={blocking} onGoTo={goToField} />
 
               {Object.entries(app.docs).map(([key, doc]) => (
                 <DocPanel
@@ -110,6 +152,7 @@ export default function App() {
                   isOpen={openDocs.has(key)}
                   badFields={badFields.get(key) ?? new Set()}
                   failCount={failCounts.get(key) ?? 0}
+                  highlight={highlight}
                   onToggle={actions.toggleDoc}
                   onEdit={onEdit}
                 />

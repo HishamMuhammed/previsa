@@ -27,7 +27,7 @@ export default function ReportPanel({ report, filter, onFilter }) {
     return [...cats.entries()];
   }, [shown, report]);
 
-  const { fail, warn, pass } = report.tally;
+  const { fail, warn, pass, na } = report.tally;
 
   return (
     <section className="panel">
@@ -40,6 +40,7 @@ export default function ReportPanel({ report, filter, onFilter }) {
           ['fail', 'Failing', fail],
           ['warn', 'Warnings', warn],
           ['pass', 'Passing', pass],
+          ['na', 'Not checked', na],
         ].map(([key, label, n]) => (
           <button
             key={key}

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- A stamped tick in the app's own stamp red, matching .brand-mark.
+       An SVG rather than a PNG so it is sharp at every tab size and needs no
+       second request. -->
+  <rect width="32" height="32" fill="#9E2B20"/>
+  <path d="M7 16.5l6 6 12-13" fill="none" stroke="#F2F0EA" stroke-width="3.4"
+        stroke-linecap="square" stroke-linejoin="miter"/>
+</svg>

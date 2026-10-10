@@ -18,8 +18,16 @@ export default function ScoreHeader({ report }) {
   const { score, tally } = report;
   const decided = tally.pass + tally.fail + tally.warn;
 
+  // aria-live because the score is the one thing that changes on every keystroke.
+  // Without it a screen reader user gets no announcement when it moves 80% -> 75%,
+  // which is the entire feedback loop of the app.
   return (
-    <div className="score-row">
+    <div
+      className="score-row"
+      role="status"
+      aria-live="polite"
+      aria-label={`Readiness ${score} percent. ${tally.fail} failing, ${tally.warn} warnings, ${tally.pass} passing.`}
+    >
       <div className="score-block">
         <span className="score-label">ready</span>
         <span className={`score-value ${tally.fail === 0 ? 'good' : ''}`}>{score}%</span>
@@ -32,7 +40,7 @@ export default function ScoreHeader({ report }) {
             : 'Every check that could run, ran.'}
         </p>
       </div>
-      <div className="tally" aria-label={`${tally.fail} failing, ${tally.warn} warnings, ${tally.pass} passing`}>
+      <div className="tally" aria-hidden="true">
         <div className={`tally-seg fails ${tally.fail ? 'has' : ''}`} style={{ flexGrow: Math.max(tally.fail, 0.001) }}>
           {tally.fail} failing
         </div>

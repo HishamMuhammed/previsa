@@ -261,38 +261,14 @@ body{
 .fx-count.fx-clear{color:var(--ok)}
 .fx-sub{font:12.5px/1.4 var(--sans);color:var(--ink-2)}
 
-.fixlist{list-style:none;margin:0 0 26px;padding:0;border-top:var(--hair) solid var(--rule)}
+.fx-list{list-style:none;margin:0;padding:0;border-top:var(--hair) solid var(--rule)}
+/* One line per row. Everything below this point in the fix-list block is dead
+   legacy CSS from the version that rendered a second <input> per field; it has
+   been removed rather than left to override the rules in the current section
+   (.fx-row's 30px indent and 25px of padding were silently winning, which is why
+   rows measured 59px instead of 33px). */
 .fx-row{
-  padding:12px 2px 13px 30px;position:relative;
-  border-bottom:var(--hair) solid var(--rule);
-}
-/* the tick box: an outlined square that becomes a checked one when the rule
-   clears. There is no separate "done" state to maintain — the row only exists
-   while its rule is still failing, so vanishing IS the completion. */
-.fx-box{
-  position:absolute;left:2px;top:14px;
-  width:15px;height:15px;border:1px solid var(--rule-2);background:var(--paper-2);
-}
-.fx-row.fail .fx-box{border-color:var(--stamp);box-shadow:inset 0 0 0 3px var(--paper-2)}
-.fx-row.warn .fx-box{border-color:var(--warn)}
-.fx-top{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
-.fx-field{font:13px/1.3 var(--mono);font-weight:600;color:var(--ink)}
-.fx-ids{font:10.5px/1 var(--mono);color:var(--ink-3);padding-top:2px}
-.fx-where{margin-top:5px;font:12px/1.45 var(--sans);color:var(--ink-2)}
-.fx-where code{
-  font:12px/1 var(--mono);background:var(--paper-3);
-  padding:2px 5px;border:1px solid var(--rule);
-}
-.fx-how{
-  margin-top:7px;padding:7px 9px;
-  background:var(--paper-3);border-left:2px solid var(--rule-2);
-  font:12px/1.5 var(--sans);color:var(--ink-2);
-}
-.fx-row.fail .fx-how{border-left-color:var(--stamp)}
-.fx-row.warn .fx-how{border-left-color:var(--warn)}
-.fx-done{
-  padding:14px 2px;font:13px/1.5 var(--sans);color:var(--ok);
-  border-bottom:var(--hair) solid var(--rule);
+  border-bottom:1px solid var(--rule);
 }
 
 /* ================================================================= layout */
@@ -329,7 +305,8 @@ body{
    rendered at full height (555px for the application form) while its caret pointed
    sideways as though it were open.
 
-   Two subtleties, both found by measuring rather than reasoning:
+   How collapse is done here matters, because the obvious approach is broken. Three
+   subtleties, all found by measuring rather than reasoning:
 
    1. The 0fr -> 1fr grid trick collapses ONE track, and .fields originally had 16
       direct children (one .field per row), so only row 1 collapsed. The children
@@ -339,12 +316,26 @@ body{
       grid row measured 0px, yet the box was still 18px tall — exactly the 2px top
       plus 16px bottom padding on that element. Padding sits outside the collapsed
       content, so it must live on a child INSIDE the overflow box, not on the box.
-      That is what .fields-pad is for. */
+      That is what .fields-pad is for.
+
+   3. DO NOT put a `transition` on grid-template-rows here. It is what made this
+      collapse mechanism quietly stop working: Chromium froze the animated value at
+      its start, so an "open" panel measured 0px forever and every input inside it
+      was invisible — while the caret, the badge and the is-open class all reported
+      the panel was open. Setting transition:none on the same element resolved it to
+      258px immediately. The fault looked exactly like a broken click handler.
+
+   So collapse is done with content-visibility, which is the modern answer to
+   "hide a subtree cheaply and skip rendering it": it collapses to zero height,
+   it is not animatable (no risk of the value freezing), and it is explicitly what
+   content-visibility: hidden is specified to do. Reduced motion gets it too, which
+   is the honest choice — a panel that pops open is not an animation. */
 .doc .fields{
-  display:grid;grid-template-rows:0fr;
-  transition:grid-template-rows .22s var(--ease);
+  content-visibility:hidden;
 }
-.doc.is-open .fields{grid-template-rows:1fr}
+.doc.is-open .fields{
+  content-visibility:visible;
+}
 /* The single wrapper inside .fields. min-height:0 is required or the 1fr track
    refuses to shrink below its content; overflow:hidden stops the fields showing
    through the zero-height box during the animation. */
@@ -525,6 +516,11 @@ body{
 .tally-seg.passes{background:var(--pass-soft);color:var(--pass)}
 
 /* --- fix list: the payoff view, so it reads as instructions --- */
+/* The fix list is a set of links, not a second set of inputs.
+   It used to render an <input> per row, which made it 1368px tall on a 633px
+   viewport, pushed the document panels below the fold, duplicated 10 element ids
+   and made a screen reader announce "Flight itineraryfareEURR08" as the label for
+   a fare field. One input per field, in one place: the document panel. */
 .fx{margin:0 0 1.25rem}
 .fx-clear{
   padding:13px 15px;
@@ -545,34 +541,48 @@ body{
 .fx-list{list-style:none;margin:0;padding:0}
 
 .fx-row{
-  padding:11px 2px 12px;
   border-bottom:1px solid var(--rule);
-  display:grid;
-  gap:6px;
 }
-.fx-row label{
-  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+/* A row is one compact line that jumps to the real field. No input, so a row is
+   ~34px instead of ~137px. */
+.fx-jump{
+  display:flex;align-items:center;gap:9px;flex-wrap:nowrap;
+  width:100%;
+  padding:6px 2px 7px;
+  background:none;border:0;
   font:11px/1.4 var(--sans);
+  text-align:left;
   cursor:pointer;
+  transition:background .12s var(--ease);
 }
+.fx-jump:hover{background:var(--paper-2)}
+.fx-jump:focus-visible{outline:2px solid var(--stamp);outline-offset:-2px}
+.fx-jump .fx-go{
+  margin-left:auto;flex:none;
+  font-size:12px;color:var(--ink-3);
+  opacity:0;transition:opacity .12s var(--ease);
+}
+.fx-jump:hover .fx-go{opacity:1}
 .fx-doc{
-  font:600 10px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;
+  /* A compact tag, not the document's full label. "Host invitation letter" was
+     long enough to wrap the row to two lines, and ten wrapped rows are 600px of
+     fix list instead of 340. The full name is on the panel the row jumps to. */
+  font:600 9.5px/1 var(--sans);letter-spacing:.1em;text-transform:uppercase;
   color:var(--ink-3);
+  padding:4px 6px;border:1px solid var(--rule);flex:none;
+  align-self:center;
 }
 .fx-field{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
 .fx-row .rid{font:10px/1 var(--mono);color:var(--ink-3);margin-left:auto}
 .fx-row.fail .rid{color:var(--stamp)}
 .fx-row.warn .rid{color:var(--warn)}
-.fx-row input{
-  width:100%;max-width:420px;
-  font:14px/1.5 var(--mono);
-  padding:7px 9px;
-  border:1px solid var(--rule-2);
+/* The field the fix list jumped to. A ring, so the jump is not just a scroll —
+   the eye lands on the input it needs. */
+.field.is-hot input{
+  outline:2px solid var(--stamp);
+  outline-offset:1px;
   background:var(--paper-2);
-  color:var(--ink);
 }
-.fx-row.fail input{border-left:3px solid var(--stamp)}
-.fx-row.warn input{border-left:3px solid var(--warn)}
 .fx-hint{margin:2px 0 0;font:12px/1.5 var(--sans);color:var(--ink-2);max-width:64ch}
 
 /* --- doc panel fields: monospace data, clearly not prose --- */
