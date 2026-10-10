@@ -4,6 +4,7 @@ import { useTheme } from './useTheme.js';
 import { badFieldsByDoc, failCountByDoc, fixRows, graphEdges } from './derive.js';
 import ScoreHeader from './components/ScoreHeader.jsx';
 import Checklist from './components/Checklist.jsx';
+import ApplicantBar from './components/ApplicantBar.jsx';
 import DocPanel from './components/DocPanel.jsx';
 import ReportPanel from './components/ReportPanel.jsx';
 import FixList from './components/FixList.jsx';
@@ -124,7 +125,42 @@ export default function App() {
         </div>
         <div className="topbar-right">
           <span className="chip">{app.meta?.applicant ?? ''}</span>
-          <span className="chip">{app.meta?.destination ?? ''}</span>
+          {/* Destination and dates are editable here because they are the SHARED
+              trip in multi-applicant mode: editing them must update every applicant.
+              editShared in the reducer stamps the value into both the live app and
+              the shared record. */}
+          <label className="chip chip-edit">
+            <span className="chip-label">dest</span>
+            <input
+              className="chip-input"
+              value={app.meta?.destination ?? ''}
+              onChange={(e) => {
+                // meta.destination is the free text the rules parse. When
+                // trip.destinationCountry was set explicitly it takes priority in
+                // destinationKey(), so changing only the text would leave the rules
+                // on the old destination while the UI showed the new one. Clearing
+                // the explicit field keeps the two in step.
+                actions.edit('meta', 'destination', e.target.value);
+                if (app.trip?.destinationCountry) actions.edit('trip', 'destinationCountry', '');
+              }}
+            />
+          </label>
+          <label className="chip chip-edit">
+            <span className="chip-label">arrive</span>
+            <input
+              className="chip-input"
+              value={app.trip?.arrivalDate ?? ''}
+              onChange={(e) => actions.edit('trip', 'arrivalDate', e.target.value)}
+            />
+          </label>
+          <label className="chip chip-edit">
+            <span className="chip-label">depart</span>
+            <input
+              className="chip-input"
+              value={app.trip?.departureDate ?? ''}
+              onChange={(e) => actions.edit('trip', 'departureDate', e.target.value)}
+            />
+          </label>
           {/* meta.dateNote is a full sentence explaining the DD/MM/YYYY reading, not
               a date. It belongs in the page as prose; putting it in a chip made the
               header one long overflowing line. */}
@@ -143,6 +179,12 @@ export default function App() {
                 point to this column, and the checklist lives with the report on
                 the right, where it does not push the editable panels below the fold. */}
             <section className="panel">
+
+              {/* Multi-applicant bar: hidden when solo, so a single-applicant user
+                  never sees it. When active it sits above the fix list because the
+                  applicant switch is the first decision — whose documents are we
+                  looking at? */}
+              <ApplicantBar multi={state.multi} actions={actions} app={app} />
 
               <FixList rows={rows} blocking={blocking} onGoTo={goToField} />
 
@@ -164,6 +206,22 @@ export default function App() {
                 <button className="btn btn-quiet" type="button" onClick={() => loadRef.current?.click()}>Open…</button>
                 <button className="btn btn-quiet" type="button" onClick={downloadApp}>Save a copy</button>
                 <button className="btn btn-quiet" type="button" onClick={actions.reset}>Reset to the sample</button>
+                {/* Start a group application: turns the current app into the first
+                    applicant and opens the bar. The trip is shared from the start. */}
+                {(!state.multi?.applicants || state.multi.applicants.length < 2) && (
+                  <button
+                    className="btn btn-quiet"
+                    type="button"
+                    onClick={() => {
+                      const first = { id: `ap-${Date.now()}-0`, name: 'Applicant 1', app: structuredClone(app) };
+                      const second = { id: `ap-${Date.now()}-1`, name: 'Applicant 2', app: structuredClone(app) };
+                      actions.setApplicants([first, second]);
+                      actions.switchApplicant(first.id);
+                    }}
+                  >
+                    Start a group application
+                  </button>
+                )}
                 <input ref={loadRef} type="file" id="file-load" accept="application/json,.json" hidden onChange={onLoadFile} />
               </div>
             </section>
