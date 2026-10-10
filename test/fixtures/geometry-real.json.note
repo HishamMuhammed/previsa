@@ -1,0 +1,3 @@
+Verbatim pdf.js geometry captured from real visa PDFs via tools/geometry-probe.html.
+eu_page1: 237 items.  dk_page2: 76 items.
+Used to design (and to bound) the positional extractor. See README "Where import stops".

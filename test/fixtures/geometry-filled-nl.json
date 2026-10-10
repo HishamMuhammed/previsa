@@ -1,0 +1,1306 @@
+{
+ "note": "Verbatim pdf.js geometry for page 1 of a genuinely FILLED Schengen application (provisy.ru Netherlands business sample). Captured via tools/geometry-probe.html. This is the layout the plain-text extractor cannot read. page2_items holds page 2 (passport/contact fields) for the same document.",
+ "source": "https://provisy.ru/wp-content/uploads/2020/02/Netherlands-sample-business.pdf",
+ "page": 1,
+ "width": 595,
+ "height": 842,
+ "items": [
+  {
+   "s": "1",
+   "x": 28,
+   "y": 35,
+   "w": 4,
+   "h": 9
+  },
+  {
+   "s": "No logo is required for Norway, Iceland, Liechtenstein and Switzerland.",
+   "x": 35,
+   "y": 31,
+   "w": 304,
+   "h": 11
+  },
+  {
+   "s": "1/4",
+   "x": 552,
+   "y": 31,
+   "w": 15,
+   "h": 12
+  },
+  {
+   "s": "Harmonised application form",
+   "x": 236,
+   "y": 798,
+   "w": 124,
+   "h": 11
+  },
+  {
+   "s": "Application for Schengen Visa",
+   "x": 233,
+   "y": 775,
+   "w": 130,
+   "h": 11
+  },
+  {
+   "s": "This application form is free",
+   "x": 238,
+   "y": 751,
+   "w": 120,
+   "h": 11
+  },
+  {
+   "s": "1",
+   "x": 127,
+   "y": 669,
+   "w": 4,
+   "h": 9
+  },
+  {
+   "s": "Family members of EU, EEA or CH citizens shall not fill in fields no.21, 22, 30, 31 and 32 (marked with *).",
+   "x": 34,
+   "y": 638,
+   "w": 520,
+   "h": 12
+  },
+  {
+   "s": "Fields 1-3 shall be filled in in accordance with the data in the travel document.",
+   "x": 34,
+   "y": 613,
+   "w": 330,
+   "h": 11
+  },
+  {
+   "s": "SMIRNOVA",
+   "x": 61,
+   "y": 567,
+   "w": 58,
+   "h": 11
+  },
+  {
+   "s": "EPIFANOVA",
+   "x": 61,
+   "y": 529,
+   "w": 62,
+   "h": 11
+  },
+  {
+   "s": "ELENA",
+   "x": 61,
+   "y": 491,
+   "w": 36,
+   "h": 11
+  },
+  {
+   "s": "05-06-1987",
+   "x": 61,
+   "y": 441,
+   "w": 49,
+   "h": 11
+  },
+  {
+   "s": "MOSCOW",
+   "x": 193,
+   "y": 453,
+   "w": 50,
+   "h": 11
+  },
+  {
+   "s": "Russian Federation",
+   "x": 193,
+   "y": 409,
+   "w": 87,
+   "h": 11
+  },
+  {
+   "s": "Russian (Former",
+   "x": 324,
+   "y": 453,
+   "w": 76,
+   "h": 11
+  },
+  {
+   "s": "USSR)",
+   "x": 324,
+   "y": 440,
+   "w": 30,
+   "h": 11
+  },
+  {
+   "s": "[-]",
+   "x": 324,
+   "y": 385,
+   "w": 10,
+   "h": 11
+  },
+  {
+   "s": "[-]",
+   "x": 324,
+   "y": 342,
+   "w": 10,
+   "h": 11
+  },
+  {
+   "s": "[-] Male",
+   "x": 61,
+   "y": 304,
+   "w": 35,
+   "h": 11
+  },
+  {
+   "s": "[x] Female",
+   "x": 102,
+   "y": 304,
+   "w": 48,
+   "h": 11
+  },
+  {
+   "s": "[x] Single",
+   "x": 258,
+   "y": 304,
+   "w": 42,
+   "h": 11
+  },
+  {
+   "s": "[-] Married",
+   "x": 307,
+   "y": 304,
+   "w": 47,
+   "h": 11
+  },
+  {
+   "s": "[-] Registered partnership",
+   "x": 258,
+   "y": 292,
+   "w": 108,
+   "h": 11
+  },
+  {
+   "s": "[-] Separated",
+   "x": 258,
+   "y": 280,
+   "w": 55,
+   "h": 11
+  },
+  {
+   "s": "[-] Divorced",
+   "x": 319,
+   "y": 280,
+   "w": 52,
+   "h": 11
+  },
+  {
+   "s": "[-] Widow(er)",
+   "x": 258,
+   "y": 269,
+   "w": 59,
+   "h": 11
+  },
+  {
+   "s": "[-] Other (please specify)",
+   "x": 258,
+   "y": 257,
+   "w": 106,
+   "h": 11
+  },
+  {
+   "s": "[x] Ordinary passport",
+   "x": 61,
+   "y": 123,
+   "w": 99,
+   "h": 11
+  },
+  {
+   "s": "[-] Diplomatic passport",
+   "x": 166,
+   "y": 123,
+   "w": 98,
+   "h": 11
+  },
+  {
+   "s": "[-] Service passport",
+   "x": 271,
+   "y": 123,
+   "w": 82,
+   "h": 11
+  },
+  {
+   "s": "[-] Official passport",
+   "x": 61,
+   "y": 111,
+   "w": 83,
+   "h": 11
+  },
+  {
+   "s": "[-] Special passport",
+   "x": 151,
+   "y": 111,
+   "w": 82,
+   "h": 11
+  },
+  {
+   "s": "[-] Other travel document (please specify):",
+   "x": 61,
+   "y": 87,
+   "w": 179,
+   "h": 11
+  },
+  {
+   "s": "FOR OFFICIAL USE ONLY",
+   "x": 442,
+   "y": 577,
+   "w": 107,
+   "h": 9
+  },
+  {
+   "s": "Embassy/consulate",
+   "x": 453,
+   "y": 458,
+   "w": 69,
+   "h": 9
+  },
+  {
+   "s": "Service provider",
+   "x": 453,
+   "y": 448,
+   "w": 60,
+   "h": 9
+  },
+  {
+   "s": "Commercial intermediary",
+   "x": 453,
+   "y": 438,
+   "w": 93,
+   "h": 9
+  },
+  {
+   "s": "Border (Name):",
+   "x": 453,
+   "y": 428,
+   "w": 57,
+   "h": 9
+  },
+  {
+   "s": "......................",
+   "x": 452,
+   "y": 418,
+   "w": 50,
+   "h": 9
+  },
+  {
+   "s": "......................",
+   "x": 452,
+   "y": 408,
+   "w": 50,
+   "h": 9
+  },
+  {
+   "s": "Other:",
+   "x": 453,
+   "y": 398,
+   "w": 23,
+   "h": 9
+  },
+  {
+   "s": "Travel document",
+   "x": 453,
+   "y": 335,
+   "w": 61,
+   "h": 9
+  },
+  {
+   "s": "Means of subsistence",
+   "x": 453,
+   "y": 325,
+   "w": 77,
+   "h": 9
+  },
+  {
+   "s": "Invitation",
+   "x": 453,
+   "y": 315,
+   "w": 35,
+   "h": 9
+  },
+  {
+   "s": "TMI",
+   "x": 453,
+   "y": 305,
+   "w": 16,
+   "h": 9
+  },
+  {
+   "s": "Means of transport",
+   "x": 453,
+   "y": 295,
+   "w": 68,
+   "h": 9
+  },
+  {
+   "s": "Other:",
+   "x": 453,
+   "y": 285,
+   "w": 23,
+   "h": 9
+  },
+  {
+   "s": "Refused",
+   "x": 453,
+   "y": 249,
+   "w": 29,
+   "h": 9
+  },
+  {
+   "s": "Issued:",
+   "x": 453,
+   "y": 239,
+   "w": 25,
+   "h": 9
+  },
+  {
+   "s": "A",
+   "x": 453,
+   "y": 229,
+   "w": 6,
+   "h": 9
+  },
+  {
+   "s": "C",
+   "x": 453,
+   "y": 219,
+   "w": 6,
+   "h": 9
+  },
+  {
+   "s": "LTV",
+   "x": 453,
+   "y": 209,
+   "w": 17,
+   "h": 9
+  },
+  {
+   "s": "Valid:",
+   "x": 453,
+   "y": 189,
+   "w": 23,
+   "h": 9
+  },
+  {
+   "s": "1",
+   "x": 437,
+   "y": 110,
+   "w": 5,
+   "h": 9
+  },
+  {
+   "s": "2",
+   "x": 463,
+   "y": 110,
+   "w": 5,
+   "h": 9
+  },
+  {
+   "s": "Multiple",
+   "x": 489,
+   "y": 110,
+   "w": 31,
+   "h": 9
+  },
+  {
+   "s": "Surname (Family name):",
+   "x": 61,
+   "y": 585,
+   "w": 105,
+   "h": 11
+  },
+  {
+   "s": "1.",
+   "x": 39,
+   "y": 585,
+   "w": 8,
+   "h": 11
+  },
+  {
+   "s": "Surname at birth (Former family name(s)):",
+   "x": 61,
+   "y": 547,
+   "w": 180,
+   "h": 11
+  },
+  {
+   "s": "2.",
+   "x": 39,
+   "y": 547,
+   "w": 8,
+   "h": 11
+  },
+  {
+   "s": "First name(s) (Given name(s)):",
+   "x": 61,
+   "y": 509,
+   "w": 130,
+   "h": 11
+  },
+  {
+   "s": "3.",
+   "x": 39,
+   "y": 509,
+   "w": 8,
+   "h": 11
+  },
+  {
+   "s": "Date of birth",
+   "x": 61,
+   "y": 471,
+   "w": 54,
+   "h": 11
+  },
+  {
+   "s": "(day-month-year):",
+   "x": 61,
+   "y": 459,
+   "w": 77,
+   "h": 11
+  },
+  {
+   "s": "4.",
+   "x": 39,
+   "y": 471,
+   "w": 8,
+   "h": 11
+  },
+  {
+   "s": "Place of birth:",
+   "x": 193,
+   "y": 471,
+   "w": 59,
+   "h": 11
+  },
+  {
+   "s": "5.",
+   "x": 170,
+   "y": 471,
+   "w": 8,
+   "h": 11
+  },
+  {
+   "s": "Country of birth:",
+   "x": 193,
+   "y": 427,
+   "w": 71,
+   "h": 11
+  },
+  {
+   "s": "6.",
+   "x": 170,
+   "y": 427,
+   "w": 8,
+   "h": 11
+  },
+  {
+   "s": "Current nationality:",
+   "x": 324,
+   "y": 471,
+   "w": 83,
+   "h": 11
+  },
+  {
+   "s": "7.",
+   "x": 302,
+   "y": 471,
+   "w": 8,
+   "h": 11
+  },
+  {
+   "s": "Nationality at birth, if",
+   "x": 324,
+   "y": 415,
+   "w": 92,
+   "h": 11
+  },
+  {
+   "s": "different:",
+   "x": 324,
+   "y": 403,
+   "w": 39,
+   "h": 11
+  },
+  {
+   "s": "Other nationalities:",
+   "x": 324,
+   "y": 360,
+   "w": 81,
+   "h": 11
+  },
+  {
+   "s": "Sex:",
+   "x": 61,
+   "y": 322,
+   "w": 19,
+   "h": 11
+  },
+  {
+   "s": "8.",
+   "x": 39,
+   "y": 322,
+   "w": 8,
+   "h": 11
+  },
+  {
+   "s": "Civil status:",
+   "x": 258,
+   "y": 322,
+   "w": 50,
+   "h": 11
+  },
+  {
+   "s": "9.",
+   "x": 236,
+   "y": 322,
+   "w": 8,
+   "h": 11
+  },
+  {
+   "s": "Parental authority (in case of minors) /legal guardian (surname, first name, address, if",
+   "x": 61,
+   "y": 237,
+   "w": 360,
+   "h": 11
+  },
+  {
+   "s": "different from applicant\u2019s, telephone no., email address, and nationality):",
+   "x": 61,
+   "y": 225,
+   "w": 307,
+   "h": 11
+  },
+  {
+   "s": "10.",
+   "x": 39,
+   "y": 237,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "National identity number, where applicable:",
+   "x": 61,
+   "y": 167,
+   "w": 185,
+   "h": 11
+  },
+  {
+   "s": "11.",
+   "x": 39,
+   "y": 167,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Type of travel document:",
+   "x": 61,
+   "y": 141,
+   "w": 106,
+   "h": 11
+  },
+  {
+   "s": "12.",
+   "x": 39,
+   "y": 141,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Date of application:",
+   "x": 437,
+   "y": 546,
+   "w": 71,
+   "h": 9
+  },
+  {
+   "s": "Application number:",
+   "x": 437,
+   "y": 510,
+   "w": 75,
+   "h": 9
+  },
+  {
+   "s": "Application lodged at:",
+   "x": 437,
+   "y": 474,
+   "w": 80,
+   "h": 9
+  },
+  {
+   "s": "File handled by:",
+   "x": 437,
+   "y": 378,
+   "w": 59,
+   "h": 9
+  },
+  {
+   "s": "Supporting documents:",
+   "x": 437,
+   "y": 352,
+   "w": 84,
+   "h": 9
+  },
+  {
+   "s": "Visa decision:",
+   "x": 437,
+   "y": 265,
+   "w": 51,
+   "h": 9
+  },
+  {
+   "s": "From: ......................",
+   "x": 437,
+   "y": 179,
+   "w": 74,
+   "h": 9
+  },
+  {
+   "s": "Until: ......................",
+   "x": 437,
+   "y": 163,
+   "w": 73,
+   "h": 9
+  },
+  {
+   "s": "Number of entries:",
+   "x": 437,
+   "y": 137,
+   "w": 68,
+   "h": 9
+  },
+  {
+   "s": "Number of days:",
+   "x": 437,
+   "y": 90,
+   "w": 60,
+   "h": 9
+  }
+ ],
+ "page2_items": [
+  {
+   "s": "2/4",
+   "x": 552,
+   "y": 31,
+   "w": 15,
+   "h": 12
+  },
+  {
+   "s": "1.",
+   "x": 56,
+   "y": 148,
+   "w": 8,
+   "h": 11
+  },
+  {
+   "s": "721234567",
+   "x": 61,
+   "y": 758,
+   "w": 47,
+   "h": 11
+  },
+  {
+   "s": "06-09-2018",
+   "x": 160,
+   "y": 781,
+   "w": 49,
+   "h": 11
+  },
+  {
+   "s": "06-09-2028",
+   "x": 258,
+   "y": 781,
+   "w": 49,
+   "h": 11
+  },
+  {
+   "s": "RUSSIA",
+   "x": 357,
+   "y": 770,
+   "w": 39,
+   "h": 11
+  },
+  {
+   "s": "[-] Spouse",
+   "x": 61,
+   "y": 630,
+   "w": 43,
+   "h": 11
+  },
+  {
+   "s": "[-] Child",
+   "x": 111,
+   "y": 630,
+   "w": 36,
+   "h": 11
+  },
+  {
+   "s": "[-] Grandchild",
+   "x": 154,
+   "y": 630,
+   "w": 60,
+   "h": 11
+  },
+  {
+   "s": "[-] Dependent ascendant",
+   "x": 221,
+   "y": 630,
+   "w": 103,
+   "h": 11
+  },
+  {
+   "s": "[-] Registered partnership",
+   "x": 61,
+   "y": 617,
+   "w": 108,
+   "h": 11
+  },
+  {
+   "s": "[-] Other (please specify):",
+   "x": 176,
+   "y": 618,
+   "w": 109,
+   "h": 11
+  },
+  {
+   "s": "LESNAYA STR. 9, APT 35",
+   "x": 61,
+   "y": 579,
+   "w": 123,
+   "h": 11
+  },
+  {
+   "s": "125196",
+   "x": 61,
+   "y": 567,
+   "w": 32,
+   "h": 11
+  },
+  {
+   "s": "Moscow",
+   "x": 61,
+   "y": 555,
+   "w": 37,
+   "h": 11
+  },
+  {
+   "s": "Russian Federation",
+   "x": 61,
+   "y": 543,
+   "w": 87,
+   "h": 11
+  },
+  {
+   "s": "ELENA@POCHTA.COM",
+   "x": 61,
+   "y": 531,
+   "w": 119,
+   "h": 11
+  },
+  {
+   "s": "007 9191234567",
+   "x": 292,
+   "y": 579,
+   "w": 71,
+   "h": 11
+  },
+  {
+   "s": "[x] No",
+   "x": 61,
+   "y": 493,
+   "w": 28,
+   "h": 11
+  },
+  {
+   "s": "[-] Yes",
+   "x": 61,
+   "y": 481,
+   "w": 29,
+   "h": 11
+  },
+  {
+   "s": "Manager",
+   "x": 61,
+   "y": 431,
+   "w": 41,
+   "h": 11
+  },
+  {
+   "s": "AO COMPANY",
+   "x": 61,
+   "y": 381,
+   "w": 73,
+   "h": 11
+  },
+  {
+   "s": "TVERSKAYA STR. 9, OFFICE 21",
+   "x": 61,
+   "y": 369,
+   "w": 158,
+   "h": 11
+  },
+  {
+   "s": "124589",
+   "x": 61,
+   "y": 357,
+   "w": 32,
+   "h": 11
+  },
+  {
+   "s": "MOSCOW",
+   "x": 61,
+   "y": 345,
+   "w": 50,
+   "h": 11
+  },
+  {
+   "s": "007 4981234567",
+   "x": 61,
+   "y": 333,
+   "w": 71,
+   "h": 11
+  },
+  {
+   "s": "[-] Tourism",
+   "x": 61,
+   "y": 295,
+   "w": 49,
+   "h": 11
+  },
+  {
+   "s": "[x] Business",
+   "x": 116,
+   "y": 295,
+   "w": 53,
+   "h": 11
+  },
+  {
+   "s": "[-] Visiting family or friends",
+   "x": 176,
+   "y": 295,
+   "w": 120,
+   "h": 11
+  },
+  {
+   "s": "[-] Cultural",
+   "x": 303,
+   "y": 295,
+   "w": 48,
+   "h": 11
+  },
+  {
+   "s": "[-] Sports",
+   "x": 357,
+   "y": 295,
+   "w": 40,
+   "h": 11
+  },
+  {
+   "s": "[-] Official visit",
+   "x": 61,
+   "y": 283,
+   "w": 66,
+   "h": 11
+  },
+  {
+   "s": "[-] Medical reasons",
+   "x": 134,
+   "y": 283,
+   "w": 82,
+   "h": 11
+  },
+  {
+   "s": "[-] Study",
+   "x": 222,
+   "y": 283,
+   "w": 38,
+   "h": 11
+  },
+  {
+   "s": "[-] Airport transit",
+   "x": 266,
+   "y": 283,
+   "w": 73,
+   "h": 11
+  },
+  {
+   "s": "[-] Other (please specify):",
+   "x": 61,
+   "y": 271,
+   "w": 109,
+   "h": 11
+  },
+  {
+   "s": "BUSINESS MEETING",
+   "x": 61,
+   "y": 233,
+   "w": 104,
+   "h": 11
+  },
+  {
+   "s": "Netherlands",
+   "x": 69,
+   "y": 148,
+   "w": 55,
+   "h": 11
+  },
+  {
+   "s": "Netherlands",
+   "x": 193,
+   "y": 183,
+   "w": 55,
+   "h": 11
+  },
+  {
+   "s": "3",
+   "x": 324,
+   "y": 160,
+   "w": 5,
+   "h": 11
+  },
+  {
+   "s": "Number of",
+   "x": 61,
+   "y": 800,
+   "w": 46,
+   "h": 11
+  },
+  {
+   "s": "travel",
+   "x": 61,
+   "y": 788,
+   "w": 24,
+   "h": 11
+  },
+  {
+   "s": "document:",
+   "x": 61,
+   "y": 776,
+   "w": 44,
+   "h": 11
+  },
+  {
+   "s": "13.",
+   "x": 39,
+   "y": 800,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Date of issue:",
+   "x": 160,
+   "y": 800,
+   "w": 58,
+   "h": 11
+  },
+  {
+   "s": "14.",
+   "x": 137,
+   "y": 800,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Valid until:",
+   "x": 258,
+   "y": 800,
+   "w": 48,
+   "h": 11
+  },
+  {
+   "s": "15.",
+   "x": 236,
+   "y": 800,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Issued by",
+   "x": 357,
+   "y": 800,
+   "w": 40,
+   "h": 11
+  },
+  {
+   "s": "(country):",
+   "x": 357,
+   "y": 788,
+   "w": 42,
+   "h": 11
+  },
+  {
+   "s": "16.",
+   "x": 335,
+   "y": 800,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Personal data of the family member who is an EU, EEA or CH citizen if applicable",
+   "x": 61,
+   "y": 738,
+   "w": 349,
+   "h": 11
+  },
+  {
+   "s": "17.",
+   "x": 39,
+   "y": 738,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Surname (Family name):",
+   "x": 61,
+   "y": 712,
+   "w": 105,
+   "h": 11
+  },
+  {
+   "s": "First name(s) (Given name(s)):",
+   "x": 258,
+   "y": 712,
+   "w": 130,
+   "h": 11
+  },
+  {
+   "s": "Date of birth",
+   "x": 61,
+   "y": 686,
+   "w": 54,
+   "h": 11
+  },
+  {
+   "s": "(day-month-year):",
+   "x": 61,
+   "y": 674,
+   "w": 77,
+   "h": 11
+  },
+  {
+   "s": "Nationality:",
+   "x": 193,
+   "y": 686,
+   "w": 50,
+   "h": 11
+  },
+  {
+   "s": "Number of travel",
+   "x": 324,
+   "y": 686,
+   "w": 72,
+   "h": 11
+  },
+  {
+   "s": "document or ID card:",
+   "x": 324,
+   "y": 674,
+   "w": 90,
+   "h": 11
+  },
+  {
+   "s": "Family relationship with an EU, EEA or CH citizen if applicable:",
+   "x": 61,
+   "y": 648,
+   "w": 275,
+   "h": 11
+  },
+  {
+   "s": "18.",
+   "x": 39,
+   "y": 648,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Applicant\u2019s home address and e-mail address:",
+   "x": 61,
+   "y": 597,
+   "w": 193,
+   "h": 11
+  },
+  {
+   "s": "19.",
+   "x": 39,
+   "y": 597,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Telephone no.:",
+   "x": 292,
+   "y": 597,
+   "w": 63,
+   "h": 11
+  },
+  {
+   "s": "Residence in a country other than the country of current nationality:",
+   "x": 61,
+   "y": 511,
+   "w": 285,
+   "h": 11
+  },
+  {
+   "s": "20.",
+   "x": 39,
+   "y": 511,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Current occupation:",
+   "x": 61,
+   "y": 449,
+   "w": 84,
+   "h": 11
+  },
+  {
+   "s": "* 21.",
+   "x": 39,
+   "y": 449,
+   "w": 21,
+   "h": 11
+  },
+  {
+   "s": "Employer and employer\u2019s address and telephone number. For students, name and",
+   "x": 61,
+   "y": 411,
+   "w": 342,
+   "h": 11
+  },
+  {
+   "s": "address of educational establishment:",
+   "x": 61,
+   "y": 399,
+   "w": 157,
+   "h": 11
+  },
+  {
+   "s": "* 22.",
+   "x": 39,
+   "y": 411,
+   "w": 21,
+   "h": 11
+  },
+  {
+   "s": "Purpose(s) of the journey:",
+   "x": 61,
+   "y": 313,
+   "w": 109,
+   "h": 11
+  },
+  {
+   "s": "23.",
+   "x": 39,
+   "y": 313,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Additional information on the purpose of the stay:",
+   "x": 61,
+   "y": 251,
+   "w": 211,
+   "h": 11
+  },
+  {
+   "s": "24.",
+   "x": 39,
+   "y": 251,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Member State of main",
+   "x": 61,
+   "y": 213,
+   "w": 94,
+   "h": 11
+  },
+  {
+   "s": "destination (and other",
+   "x": 61,
+   "y": 201,
+   "w": 92,
+   "h": 11
+  },
+  {
+   "s": "Member States of",
+   "x": 61,
+   "y": 190,
+   "w": 75,
+   "h": 11
+  },
+  {
+   "s": "destination, if",
+   "x": 61,
+   "y": 178,
+   "w": 58,
+   "h": 11
+  },
+  {
+   "s": "applicable):",
+   "x": 61,
+   "y": 166,
+   "w": 50,
+   "h": 11
+  },
+  {
+   "s": "25.",
+   "x": 39,
+   "y": 213,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Member State of first",
+   "x": 193,
+   "y": 213,
+   "w": 90,
+   "h": 11
+  },
+  {
+   "s": "entry:",
+   "x": 193,
+   "y": 201,
+   "w": 24,
+   "h": 11
+  },
+  {
+   "s": "26.",
+   "x": 170,
+   "y": 213,
+   "w": 13,
+   "h": 11
+  },
+  {
+   "s": "Duration of the",
+   "x": 324,
+   "y": 213,
+   "w": 64,
+   "h": 11
+  },
+  {
+   "s": "intended stay or transit",
+   "x": 324,
+   "y": 201,
+   "w": 96,
+   "h": 11
+  },
+  {
+   "s": "Indicate number of",
+   "x": 324,
+   "y": 190,
+   "w": 80,
+   "h": 11
+  },
+  {
+   "s": "days:",
+   "x": 324,
+   "y": 178,
+   "w": 22,
+   "h": 11
+  }
+ ]
+}

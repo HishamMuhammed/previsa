@@ -1,0 +1,680 @@
+/* Preflight — "archival file" visual language.
+ *
+ * The subject is a paper visa application that a consular officer reads by eye.
+ * So: paper, ink, rubber stamps, typewriter monospace. Light, not a dark SaaS
+ * dashboard. Every colour pair is checked against WCAG AA by tools/contrast.mjs
+ * (15/15 pass) — ink-on-paper sits at 15.8:1, far past the 4.5:1 floor.
+ *
+ * Restraint: the memorable element is the red stamp. Everything else is quiet.
+ */
+
+/* ================================================================= themes
+ * Tokens live on :root and are overridden under [data-theme="dark"]. Every
+ * colour the design uses is one of these variables, so a theme switch needs no
+ * second stylesheet and the SVG graph (which bakes literal hexes) is the only
+ * place that has to be told which theme it is in — see paintGraph() in app.js.
+ * Both palettes are held to WCAG AA by tools/contrast.mjs (32/32 pairs pass).
+ */
+:root{
+  /* --- paper & ink (light: archival paper) --- */
+  --paper:    #F2F0EA;
+  --paper-2:  #FBFAF6;
+  --paper-3:  #E8E5DC;
+  --ink:      #17170F;
+  --ink-2:    #45443C;
+  --ink-3:    #6E6C62;
+  --rule:     #D5D1C4;
+  --rule-2:   #BDB8A8;
+
+  /* --- the stamp (the one loud element) --- */
+  --stamp:      #9E2B20;
+  --stamp-soft: #F7E7E4;
+
+  /* --- verdicts --- */
+  --ok:        #2C6A4C;
+  --ok-soft:   #E4EFE7;
+  --warn:      #8A5D12;
+  --warn-soft: #F5EDDD;
+
+  /* --- texture: only visible on light paper --- */
+  --tex-a: rgba(23,23,15,.014);
+  --tex-b: rgba(23,23,15,.010);
+
+  /* --- type --- */
+  --sans: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  --mono: ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+
+  --hair:1px;
+  --ease:cubic-bezier(.2,.6,.3,1);
+}
+
+/* Dark: the same materials at night — warm dark ground, pale ink, a brighter
+   stamp (the light stamp reads as dull brown on a dark surface). */
+[data-theme="dark"]{
+  --paper:    #14130E;
+  --paper-2:  #1D1C15;
+  --paper-3:  #282619;
+  --ink:      #F1EEE3;
+  --ink-2:    #CBC7B7;
+  --ink-3:    #9C9889;
+  --rule:     #33311F;
+  --rule-2:   #4E4B39;
+
+  --stamp:      #F08572;
+  --stamp-soft: #3B201B;
+
+  --ok:        #7FC79B;
+  --ok-soft:   #1E2E24;
+  --warn:      #E0AE52;
+  --warn-soft: #332818;
+
+  --tex-a: rgba(241,238,227,.016);
+  --tex-b: rgba(241,238,227,.011);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  /* faint laid-paper texture: two hairline gradients, no image request */
+  background-image:
+    repeating-linear-gradient(0deg,var(--tex-a) 0 1px,transparent 1px 3px),
+    repeating-linear-gradient(90deg,var(--tex-b) 0 1px,transparent 1px 4px);
+  color:var(--ink);
+  font:16px/1.6 var(--sans);
+  -webkit-font-smoothing:antialiased;
+  color-scheme:light;
+}
+[data-theme="dark"] body{color-scheme:dark}
+#app{max-width:1180px;margin:0 auto;padding:0 24px 72px}
+
+/* ================================================================= top */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;
+  padding:26px 0 15px;border-bottom:2px solid var(--ink);
+}
+.brand{display:flex;align-items:center}
+.brand h1{margin:0;font-size:29px;line-height:1;font-weight:600;letter-spacing:-.5px}
+.brand .sub{
+  margin:6px 0 0;font:11px/1 var(--mono);letter-spacing:.17em;
+  text-transform:uppercase;color:var(--ink-3);
+}
+/* a stamped seal, not a sparkle glyph */
+.mark{
+  display:inline-flex;align-items:center;justify-content:center;flex:none;
+  width:38px;height:38px;margin-right:14px;
+  border:1.5px solid var(--stamp);border-radius:50%;
+  color:var(--stamp);font-size:16px;font-weight:700;
+  transform:rotate(-8deg);
+}
+.topmeta{display:flex;flex-wrap:wrap;border:1px solid var(--rule-2);background:var(--paper-2)}
+.chip{
+  font:11.5px/1 var(--mono);padding:9px 13px;color:var(--ink-2);
+  border-right:1px solid var(--rule);white-space:nowrap;
+}
+.chip:last-child{border-right:0}
+.chip b{color:var(--ink);font-weight:600}
+
+/* Theme toggle: sits in the chip strip but behaves as a control. Inherits the
+   chip's box so it reads as part of the filing header, not a floating widget. */
+.chip-btn{
+  font-family:var(--mono);cursor:pointer;color:var(--ink-2);
+  background:transparent;border:0;border-right:0;
+  display:inline-flex;align-items:center;gap:6px;
+  transition:background .15s var(--ease),color .15s var(--ease);
+}
+.chip-btn::before{
+  content:"◐";font-size:13px;line-height:1;color:var(--ink-3);
+  transition:color .15s var(--ease);
+}
+.chip-btn:hover{background:var(--paper-3);color:var(--ink)}
+.chip-btn:hover::before{color:var(--ink)}
+.chip-btn:focus-visible{outline:2px solid var(--stamp);outline-offset:-2px}
+[data-theme-choice="light"] .chip-btn::before{content:"☀"}
+[data-theme-choice="dark"] .chip-btn::before{content:"☾"}
+
+/* ================================================================= masthead */
+.masthead{
+  display:flex;align-items:center;justify-content:space-between;gap:30px;flex-wrap:wrap;
+  padding:22px 0 18px;border-bottom:var(--hair) solid var(--rule);
+}
+.verdict{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+/* the hero: a stamped number, not a dashboard gauge */
+.score-num{font:700 68px/.84 var(--sans);letter-spacing:-3px;color:var(--stamp)}
+.score-num.good{color:var(--ok)}
+.score-lbl{
+  font:11px/1 var(--mono);letter-spacing:.17em;text-transform:uppercase;
+  color:var(--ink-3);align-self:flex-start;padding-top:14px;
+}
+.verdict-note{font-size:14px;color:var(--ink-2);max-width:30ch;line-height:1.5}
+.verdict-note b{color:var(--ink);font-weight:600}
+
+/* segmented tally — reads as a filing docket, not a progress widget */
+.tally-bar{
+  display:flex;height:34px;flex:1;min-width:300px;max-width:440px;
+  border:1px solid var(--ink);background:var(--paper-2);
+}
+.tally-seg{
+  display:flex;align-items:center;justify-content:center;
+  font:11.5px/1 var(--mono);border-right:1px solid var(--rule);
+  color:var(--ink-2);overflow:hidden;white-space:nowrap;
+  transition:flex-grow .35s var(--ease);
+}
+.tally-seg:last-child{border-right:0}
+.tally-seg.fail{background:var(--stamp-soft);color:var(--stamp);font-weight:600}
+.tally-seg.warn{background:var(--warn-soft);color:var(--warn);font-weight:600}
+.tally-seg.pass{background:var(--ok-soft);color:var(--ok)}
+.tally-seg .n{font-weight:700}
+.tally-seg .lab{padding-left:5px}
+.masthead-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:20px}
+.io-note{
+  margin:8px 0 0;font:11.5px/1.4 var(--mono);color:var(--ok);min-height:16px;
+}
+.io-note.is-bad{color:var(--stamp)}
+
+/* ================================================================= buttons */
+.btn{
+  font:12px/1 var(--mono);letter-spacing:.03em;
+  padding:11px 16px;cursor:pointer;
+  background:var(--paper-2);color:var(--ink);
+  border:1px solid var(--ink);border-radius:0;
+  transition:background .15s var(--ease),color .15s var(--ease);
+}
+.btn:hover{background:var(--ink);color:var(--paper-2)}
+.btn:focus-visible{outline:2px solid var(--stamp);outline-offset:2px}
+.btn-quiet{border-color:var(--rule-2);color:var(--ink-2)}
+.btn-quiet:hover{background:var(--paper-3);color:var(--ink);border-color:var(--ink)}
+
+/* ================================================================= pdf import */
+.pdf-controls{display:flex;gap:18px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+/* Push Clear to the far end of the row so it reads as a separate action rather
+   than a third field to fill in. auto margin only applies when there is room; on a
+   narrow screen flex-wrap drops it onto its own line instead. */
+#btn-pdf-clear{margin-left:auto}
+.pdf-pick{cursor:pointer}
+.pdf-pick .btn{display:inline-block}
+.pdf-pick input:focus-visible + .btn{outline:2px solid var(--stamp);outline-offset:2px}
+.pdf-which{display:flex;align-items:center;gap:8px;font:12.5px/1 var(--mono);color:var(--ink-2)}
+.pdf-which select{
+  font:12.5px/1 var(--mono);padding:9px 10px;
+  background:var(--paper-2);color:var(--ink);
+  border:1px solid var(--rule-2);border-radius:0;
+}
+.pdf-which select:focus-visible{outline:2px solid var(--stamp);outline-offset:1px}
+
+.pdf-status{
+  margin:0 0 4px;padding:10px 12px;
+  font:12.5px/1.5 var(--sans);color:var(--ink-2);
+  background:var(--paper-3);border-left:3px solid var(--rule-2);
+  min-height:0;
+}
+.pdf-status:empty{display:none}
+.pdf-status.is-busy{border-left-color:var(--ink-3);color:var(--ink-3)}
+.pdf-status.is-bad{border-left-color:var(--stamp);color:var(--stamp);background:var(--stamp-soft)}
+.pdf-status.is-warn{border-left-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
+.pdf-count{margin:14px 0 10px;font:12.5px/1.5 var(--sans);color:var(--ink-2)}
+.pdf-empty{font:13px/1.6 var(--sans);color:var(--ink-3);margin:0;padding:12px 0}
+.pdf-note{
+  padding:13px 15px;background:var(--warn-soft);
+  border-left:3px solid var(--warn);
+}
+.pdf-note p{margin:0 0 8px;font:13px/1.6 var(--sans);color:var(--ink-2);max-width:74ch}
+.pdf-note p:last-child{margin:0}
+.pdf-note strong{color:var(--warn)}
+
+#pdf-suggestions{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
+.sg{
+  border:1px solid var(--rule);border-left:3px solid var(--rule-2);
+  background:var(--paper-2);padding:12px 13px 11px;
+}
+.sg.high{border-left-color:var(--ok)}
+.sg.medium{border-left-color:var(--warn)}
+.sg.low{border-left-color:var(--rule-2)}
+.sg-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.sg-field{font:13px/1.3 var(--mono);font-weight:600;color:var(--ink)}
+.sg-conf{font:10px/1 var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);flex:none}
+.sg.high .sg-conf{color:var(--ok)}
+.sg.medium .sg-conf{color:var(--warn)}
+.sg-src{margin-top:6px;font:11.5px/1.45 var(--sans);color:var(--ink-3)}
+.sg-src code{font:11.5px/1.3 var(--mono);color:var(--ink-2);word-break:break-word}
+.sg-row{display:flex;gap:7px;margin-top:9px;align-items:center}
+.sg-input{
+  flex:1;min-width:0;font:12.5px/1.35 var(--mono);padding:7px 9px;
+  background:var(--paper);color:var(--ink);
+  border:1px solid var(--rule);border-radius:0;
+}
+.sg-input:focus-visible{outline:2px solid var(--stamp);outline-offset:-1px}
+.sg-apply{flex:none;padding:7px 12px;font-size:11px}
+.sg-alt{margin-top:8px;font:11px/1.4 var(--sans);color:var(--warn)}
+.sg-why{margin-top:8px;font:10.5px/1.35 var(--mono);color:var(--ink-3)}
+
+/* ================================================================= fix list
+ * The core loop: a checklist that empties as the user edits. Rows are derived
+ * from findings, never stored, so the list can never disagree with the verdict.
+ */
+.fx-head{
+  display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  padding:11px 12px;margin:0 0 14px;
+  background:var(--paper-3);border-left:3px solid var(--stamp);
+}
+.fx-count{font-size:16px;font-weight:600;color:var(--stamp)}
+.fx-count.fx-clear{color:var(--ok)}
+.fx-sub{font:12.5px/1.4 var(--sans);color:var(--ink-2)}
+
+.fixlist{list-style:none;margin:0 0 26px;padding:0;border-top:var(--hair) solid var(--rule)}
+.fx-row{
+  padding:12px 2px 13px 30px;position:relative;
+  border-bottom:var(--hair) solid var(--rule);
+}
+/* the tick box: an outlined square that becomes a checked one when the rule
+   clears. There is no separate "done" state to maintain — the row only exists
+   while its rule is still failing, so vanishing IS the completion. */
+.fx-box{
+  position:absolute;left:2px;top:14px;
+  width:15px;height:15px;border:1px solid var(--rule-2);background:var(--paper-2);
+}
+.fx-row.fail .fx-box{border-color:var(--stamp);box-shadow:inset 0 0 0 3px var(--paper-2)}
+.fx-row.warn .fx-box{border-color:var(--warn)}
+.fx-top{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.fx-field{font:13px/1.3 var(--mono);font-weight:600;color:var(--ink)}
+.fx-ids{font:10.5px/1 var(--mono);color:var(--ink-3);padding-top:2px}
+.fx-where{margin-top:5px;font:12px/1.45 var(--sans);color:var(--ink-2)}
+.fx-where code{
+  font:12px/1 var(--mono);background:var(--paper-3);
+  padding:2px 5px;border:1px solid var(--rule);
+}
+.fx-how{
+  margin-top:7px;padding:7px 9px;
+  background:var(--paper-3);border-left:2px solid var(--rule-2);
+  font:12px/1.5 var(--sans);color:var(--ink-2);
+}
+.fx-row.fail .fx-how{border-left-color:var(--stamp)}
+.fx-row.warn .fx-how{border-left-color:var(--warn)}
+.fx-done{
+  padding:14px 2px;font:13px/1.5 var(--sans);color:var(--ok);
+  border-bottom:var(--hair) solid var(--rule);
+}
+
+/* ================================================================= layout */
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  border-top:var(--hair) solid var(--rule)}
+.col{padding:24px 28px 8px 0;min-width:0}
+.col+.col{border-left:var(--hair) solid var(--rule);padding:24px 0 8px 28px}
+.panel{padding:22px 0 30px;border-bottom:var(--hair) solid var(--rule)}
+.panel-h{margin:0 0 3px;font-size:17px;font-weight:600;letter-spacing:-.2px}
+.panel-note{margin:0 0 18px;font:12.5px/1.5 var(--mono);color:var(--ink-3)}
+
+/* ================================================================= documents */
+.doc{border-bottom:var(--hair) solid var(--rule)}
+.doc:last-child{border-bottom:0}
+.doc-h{display:flex;align-items:center;gap:11px;padding:13px 2px;cursor:pointer;user-select:none}
+.doc-h:hover{background:var(--paper-2)}
+.doc-h:focus-visible{outline:2px solid var(--stamp);outline-offset:-2px}
+.caret{font-size:9px;color:var(--ink-3);transition:transform .18s var(--ease);width:9px;flex:none}
+.doc.is-open .caret{transform:rotate(90deg)}
+.doc-name{font-size:15px;font-weight:600}
+.doc-tag{
+  font:10px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase;
+  color:var(--ink-3);border:1px solid var(--rule-2);padding:3px 6px;
+}
+.doc-badge{
+  margin-left:auto;font:10.5px/1 var(--mono);letter-spacing:.05em;
+  padding:5px 8px;border:1px solid transparent;flex:none;
+}
+.db-fail{color:var(--stamp);background:var(--stamp-soft);border-color:rgba(158,43,32,.25)}
+.db-warn{color:var(--warn);background:var(--warn-soft);border-color:rgba(138,93,18,.25)}
+.db-ok{color:var(--ink-3);border-color:var(--rule)}
+/* Collapsed state. The JS toggle and the caret rotation were both already correct
+   — what was missing was any rule that HIDES the body, so every collapsed document
+   rendered at full height (555px for the application form) while its caret pointed
+   sideways as though it were open.
+
+   Two subtleties, both found by measuring rather than reasoning:
+
+   1. The 0fr -> 1fr grid trick collapses ONE track, and .fields originally had 16
+      direct children (one .field per row), so only row 1 collapsed. The children
+      are wrapped in a single .fields-inner so there is exactly one track.
+
+   2. Padding on .fields-inner ITSELF does not collapse. With the track at 0fr the
+      grid row measured 0px, yet the box was still 18px tall — exactly the 2px top
+      plus 16px bottom padding on that element. Padding sits outside the collapsed
+      content, so it must live on a child INSIDE the overflow box, not on the box.
+      That is what .fields-pad is for. */
+.doc .fields{
+  display:grid;grid-template-rows:0fr;
+  transition:grid-template-rows .22s var(--ease);
+}
+.doc.is-open .fields{grid-template-rows:1fr}
+/* The single wrapper inside .fields. min-height:0 is required or the 1fr track
+   refuses to shrink below its content; overflow:hidden stops the fields showing
+   through the zero-height box during the animation. */
+.doc .fields>.fields-inner{min-height:0;overflow:hidden}
+.doc.is-open .fields>.fields-inner{overflow:visible}
+/* All the spacing lives here, inside the clipped box, so it collapses with it. */
+.doc .fields>.fields-inner>.fields-pad{padding:2px 2px 16px}
+.field{display:grid;grid-template-columns:168px minmax(0,1fr);gap:14px;align-items:start;padding:1px 0}
+.field label{
+  font:11px/2.2 var(--mono);color:var(--ink-3);text-align:right;
+  padding-top:1px;word-break:break-word;
+}
+.field input{
+  font:13px/1.35 var(--mono);padding:6px 9px;width:100%;
+  background:var(--paper-2);color:var(--ink);
+  border:1px solid var(--rule);border-left:2px solid var(--rule-2);border-radius:0;
+  transition:border-color .15s var(--ease),background .15s var(--ease);
+}
+.field input:hover{border-color:var(--rule-2);background:var(--paper-2)}
+.field input:focus{outline:0;border-color:var(--rule-2);border-left-color:var(--stamp)}
+.field input::placeholder{color:var(--ink-3);font-style:italic}
+.field input.empty{color:var(--ink-3);font-style:italic;background:var(--paper-3)}
+.field.f-fail input{border-left-color:var(--stamp);background:var(--stamp-soft)}
+.field.f-warn input{border-left-color:var(--warn);background:var(--warn-soft)}
+.hint{grid-column:2;font:11.5px/1.45 var(--mono);color:var(--stamp);padding-top:4px}
+.field.f-warn .hint{color:var(--warn)}
+
+/* ================================================================= report */
+.filters{display:flex;flex-wrap:wrap;margin-bottom:16px;border:1px solid var(--rule-2);background:var(--paper-2)}
+.fbtn{
+  font:11.5px/1 var(--mono);padding:9px 13px;cursor:pointer;
+  background:transparent;border:0;border-right:1px solid var(--rule);
+  color:var(--ink-3);transition:.15s var(--ease);
+}
+.fbtn:last-child{border-right:0}
+.fbtn:hover{color:var(--ink);background:var(--paper-3)}
+.fbtn:focus-visible{outline:2px solid var(--stamp);outline-offset:-2px}
+.fbtn.is-on{background:var(--ink);color:var(--paper-2)}
+.fbtn .n{opacity:.6;padding-left:5px}
+.cat{
+  margin:0 0 4px;font:10.5px/1 var(--mono);letter-spacing:.15em;
+  text-transform:uppercase;color:var(--ink-3);
+  padding:16px 0 9px;border-bottom:var(--hair) solid var(--rule);
+}
+.item{border-bottom:var(--hair) solid var(--rule);padding:13px 2px 14px 13px;position:relative}
+.item::before{content:"";position:absolute;left:0;top:13px;bottom:14px;width:2px;background:var(--rule-2)}
+.item.fail::before{background:var(--stamp)}
+.item.warn::before{background:var(--warn)}
+/* The verdict bar is the loud element; pass items recede so the red ones carry
+   the eye. A pass bar at full strength competed with every failure on screen. */
+.item.pass::before{background:var(--rule-2)}
+.item.na::before{background:var(--rule)}
+.item-h{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.rid{font:10.5px/1 var(--mono);color:var(--ink-3);flex:none;padding-top:2px}
+.item-t{font-size:14.5px;font-weight:600;flex:1;min-width:0}
+.st{font:10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;flex:none;padding-top:3px}
+.st.fail{color:var(--stamp);font-weight:700}
+.st.warn{color:var(--warn);font-weight:700}
+.st.pass{color:var(--ink-3)}
+.st.na{color:var(--ink-3)}
+.item p{margin:7px 0 0;font-size:13.5px;color:var(--ink-2);line-height:1.55;max-width:66ch}
+.fix{
+  margin-top:9px;padding:9px 11px;
+  background:var(--paper-3);border-left:2px solid var(--ink-3);
+  font:12.5px/1.5 var(--mono);color:var(--ink-2);
+}
+.item.fail .fix{border-left-color:var(--stamp)}
+.item.pass .fix{border-left-color:var(--ok)}
+.src{margin-top:7px;font:10.5px/1.4 var(--mono);color:var(--ink-3)}
+
+/* ================================================================= graph */
+.legend{display:flex;gap:20px;font:11.5px/1 var(--mono);color:var(--ink-3);margin-bottom:14px;flex-wrap:wrap}
+.sw{display:inline-block;width:22px;border-top:2px solid;vertical-align:middle;margin-right:7px}
+.sw.ok{border-color:var(--ok)}
+.sw.bad{border-color:var(--stamp)}
+.sw.na{border-color:var(--rule-2);border-top-style:dashed}
+#graph{border:var(--hair) solid var(--rule);background:var(--paper-2);padding:18px 16px;overflow-x:auto}
+#graph svg{display:block;min-width:780px}
+
+/* ================================================================= foot */
+.foot{
+  margin-top:34px;padding-top:20px;border-top:2px solid var(--ink);
+  font-size:13.5px;color:var(--ink-2);line-height:1.7;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:26px;
+}
+.foot p{margin:0;max-width:62ch}
+.foot strong{color:var(--ink);font-weight:600}
+.foot-h{font:10.5px/1 var(--mono);letter-spacing:.15em;text-transform:uppercase;color:var(--ink-3);margin:0 0 9px}
+
+/* ================================================================= responsive */
+@media(max-width:900px){
+  #app{padding:0 16px 56px}
+  .grid{grid-template-columns:1fr}
+  .col{padding:20px 0 4px}
+  .col+.col{border-left:0;border-top:var(--hair) solid var(--rule);padding:20px 0 4px}
+  .masthead{gap:18px}
+  .score-num{font-size:58px}
+  .tally-bar{min-width:0;width:100%}
+  .field{grid-template-columns:118px minmax(0,1fr);gap:10px}
+  .brand h1{font-size:24px}
+  .mark{width:32px;height:32px;font-size:14px;margin-right:10px}
+}
+@media(prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important;animation-duration:.01ms !important}
+}
+@media print{
+  .masthead-actions,.filters,#graph,.foot{display:none}
+  body{background:#fff}
+}
+/* ================================================================= React additions
+ * The vanilla app rendered one string of HTML; React renders the same elements
+ * with the same class names, so everything above still applies. What follows is
+ * the React-specific surface plus the typography scale that was the weakest part
+ * of the original: a single serif at ~15px carrying every kind of text, so the
+ * score, the verdict, the labels and the data all looked like the same voice.
+ *
+ * The scale is deliberately small and strict. Hierarchy here comes from size,
+ * weight and letter-spacing, not from a dozen font sizes.
+ */
+
+/* --- the score is the hero; it was previously the same size as body text --- */
+.score-value{
+  font-family:var(--serif);
+  font-size:clamp(3.4rem, 9vw, 5.6rem);
+  font-weight:600;
+  line-height:.86;
+  letter-spacing:-.045em;
+  color:var(--stamp);
+  font-variant-numeric:lining-nums tabular-nums;
+}
+.score-value.good{color:var(--pass)}
+.score-label{
+  display:block;
+  font:600 10px/1 var(--sans);
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--ink-3);
+  margin-bottom:.5rem;
+}
+.score-row{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  grid-template-areas:"score verdict" "tally tally";
+  gap:1.5rem 2rem;
+  align-items:center;
+  padding:1.75rem 0 1.5rem;
+  border-bottom:1px solid var(--rule);
+  margin-bottom:1.75rem;
+}
+.score-block{grid-area:score;display:flex;flex-direction:column;align-items:flex-start}
+.verdict{grid-area:verdict}
+.verdict-line{
+  margin:0 0 .35rem;
+  font-family:var(--serif);
+  font-size:1.32rem;
+  line-height:1.35;
+  font-weight:500;
+  letter-spacing:-.012em;
+  color:var(--ink);
+}
+.verdict-sub{margin:0;font:13.5px/1.5 var(--sans);color:var(--ink-3);max-width:52ch}
+
+.tally{
+  grid-area:tally;
+  display:flex;
+  gap:2px;
+  height:26px;
+  border:1px solid var(--rule);
+}
+.tally-seg{
+  display:flex;align-items:center;justify-content:center;
+  font:10.5px/1 var(--sans);letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-3);min-width:0;overflow:hidden;white-space:nowrap;
+  transition:flex-grow .28s var(--ease);
+}
+.tally-seg.fails{background:var(--stamp-soft);color:var(--stamp)}
+.tally-seg.warns{background:var(--warn-soft);color:var(--warn)}
+.tally-seg.passes{background:var(--pass-soft);color:var(--pass)}
+
+/* --- fix list: the payoff view, so it reads as instructions --- */
+.fx{margin:0 0 1.25rem}
+.fx-clear{
+  padding:13px 15px;
+  background:var(--paper-2);
+  border-left:3px solid var(--rule-2);
+}
+.fx-clear.has{border-left-color:var(--stamp);background:var(--stamp-soft)}
+.fx-count{
+  display:block;
+  font-family:var(--serif);
+  font-size:1.06rem;
+  font-weight:600;
+  letter-spacing:-.008em;
+  color:var(--ink);
+}
+.fx-clear.has .fx-count{color:var(--stamp)}
+.fx-sub{margin:.35rem 0 0;font:12.5px/1.5 var(--sans);color:var(--ink-2);max-width:62ch}
+.fx-list{list-style:none;margin:0;padding:0}
+
+.fx-row{
+  padding:11px 2px 12px;
+  border-bottom:1px solid var(--rule);
+  display:grid;
+  gap:6px;
+}
+.fx-row label{
+  display:flex;align-items:baseline;gap:8px;flex-wrap:wrap;
+  font:11px/1.4 var(--sans);
+  cursor:pointer;
+}
+.fx-doc{
+  font:600 10px/1 var(--sans);letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);
+}
+.fx-field{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
+.fx-row .rid{font:10px/1 var(--mono);color:var(--ink-3);margin-left:auto}
+.fx-row.fail .rid{color:var(--stamp)}
+.fx-row.warn .rid{color:var(--warn)}
+.fx-row input{
+  width:100%;max-width:420px;
+  font:14px/1.5 var(--mono);
+  padding:7px 9px;
+  border:1px solid var(--rule-2);
+  background:var(--paper-2);
+  color:var(--ink);
+}
+.fx-row.fail input{border-left:3px solid var(--stamp)}
+.fx-row.warn input{border-left:3px solid var(--warn)}
+.fx-hint{margin:2px 0 0;font:12px/1.5 var(--sans);color:var(--ink-2);max-width:64ch}
+
+/* --- doc panel fields: monospace data, clearly not prose --- */
+.field input{
+  font-family:var(--mono);
+  font-size:13.5px;
+}
+.field.is-bad input{border-left:3px solid var(--stamp);background:var(--stamp-soft)}
+
+/* --- filters --- */
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 1rem}
+.fbtn{
+  font:12px/1 var(--sans);
+  padding:7px 10px;
+  border:1px solid var(--rule-2);
+  background:var(--paper-2);
+  color:var(--ink-2);
+  cursor:pointer;
+  transition:background .14s var(--ease),color .14s var(--ease),border-color .14s var(--ease);
+}
+.fbtn:hover{border-color:var(--ink-3)}
+.fbtn.is-on{background:var(--ink);color:var(--paper-2);border-color:var(--ink)}
+.fbtn .n{font-family:var(--mono);opacity:.72;margin-left:3px}
+
+/* --- graph --- */
+.graph{width:100%;height:auto;max-width:420px;display:block;margin:0 auto}
+.edge{stroke:var(--stamp);stroke-width:1.5;opacity:.55}
+.edge.warn{stroke:var(--warn)}
+.node{fill:var(--paper-3);stroke:var(--rule-2);stroke-width:1.5}
+.node.bad{fill:var(--stamp-soft);stroke:var(--stamp)}
+.node-label{
+  font:9.5px var(--sans);fill:var(--ink-3);text-anchor:middle;
+  letter-spacing:.04em;
+}
+.edge-id{font:9px var(--mono);fill:var(--stamp);text-anchor:middle}
+
+/* --- file controls row --- */
+.file-row{
+  display:flex;flex-wrap:wrap;gap:8px;
+  margin-top:1.25rem;padding-top:1rem;
+  border-top:1px solid var(--rule);
+}
+
+/* --- footer: the honesty statement, deliberately quiet --- */
+.foot{
+  margin-top:2.5rem;padding-top:1.25rem;
+  border-top:1px solid var(--rule);
+}
+.foot p{
+  margin:0;max-width:74ch;
+  font:12.5px/1.65 var(--sans);color:var(--ink-3);
+}
+
+/* --- screen-reader only --- */
+.sr-only{
+  position:absolute;width:1px;height:1px;padding:0;margin:-1px;
+  overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0;
+}
+
+/* --- responsive --- */
+@media (max-width:900px){
+  .score-row{grid-template-columns:1fr;grid-template-areas:"score" "verdict" "tally";gap:1.1rem}
+  .cols{grid-template-columns:1fr !important}
+}
+@media (max-width:520px){
+  .topbar-right .chip:nth-child(2),.topbar-right .chip:nth-child(3){display:none}
+  .fx-row input{max-width:none}
+}
+
+/* --- header fixes -------------------------------------------------------
+ * The brand was one run-on line ("Preflightvisa application pre-flight
+ * checker") because the mark and the two spans had no separation, and the header
+ * overflowed horizontally because a whole sentence of meta.dateNote had been put
+ * in a chip. Both are fixed structurally: the brand text stacks, the chips are
+ * allowed to shrink, and long text is clamped rather than allowed to widen the page.
+ */
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.brand-text{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+.brand-text strong{
+  font-family:var(--serif);
+  font-size:1.42rem;font-weight:600;letter-spacing:-.02em;
+}
+.brand-sub{
+  font:10px/1.2 var(--sans);
+  letter-spacing:.15em;text-transform:uppercase;
+  color:var(--ink-3);
+}
+.topbar-right{
+  display:flex;align-items:center;gap:7px;
+  min-width:0;flex-wrap:nowrap;
+}
+.chip{
+  max-width:26ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.foot-note{
+  padding-bottom:.75rem;
+  margin-bottom:.75rem !important;
+  border-bottom:1px solid var(--rule);
+  font-style:italic;
+}
+/* Nothing in the app may widen the page: the graph SVG and long field values are
+ * the two realistic offenders. */
+#app{overflow-x:hidden;max-width:100%}
+.sheet{max-width:100%;overflow-x:hidden}
+.col{min-width:0}
