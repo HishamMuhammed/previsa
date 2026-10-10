@@ -1,72 +1,88 @@
-/* Previsa — "archival file" visual language.
+/* Previsa — "departures board" visual language.
  *
- * The subject is a paper visa application that a consular officer reads by eye.
- * So: paper, ink, rubber stamps, typewriter monospace. Light, not a dark SaaS
- * dashboard. Every colour pair is checked against WCAG AA by tools/contrast.mjs
- * (15/15 pass) — ink-on-paper sits at 15.8:1, far past the 4.5:1 floor.
+ * The subject is a flight-departure status display: a traveler checking whether
+ * their paperwork is cleared to board. So the design borrows the departures-board
+ * vocabulary — deep slate ground, phosphor-green status data, monospace
+ * readouts, live-status feel — instead of the "archival paper" look that preceded
+ * it (which read as a templated default: warm cream + serif + terracotta).
  *
- * Restraint: the memorable element is the red stamp. Everything else is quiet.
+ * Dark slate is the DEFAULT and light is the override: a departures board is a
+ * backlit display, so dark is the native state. Auto follows the OS; Light/Dark
+ * are explicit overrides.
+ *
+ * Every colour pair is checked against WCAG AA by tools/contrast.mjs (32/32
+ * pass) in BOTH themes before the CSS is written — ink-on-slate 16:1, data-green
+ * 14.5:1. Restraint: the memorable element is the phosphor green. Everything
+ * around it is quiet slate.
+ *
+ * Variable names are kept semantic (surface/text/accent), not tied to the old
+ * "paper/ink/stamp" metaphor, so the rest of the stylesheet is untouched by the
+ * redesign. --paper = surface, --ink = text, --stamp = the one loud accent.
  */
 
 /* ================================================================= themes
- * Tokens live on :root and are overridden under [data-theme="dark"]. Every
- * colour the design uses is one of these variables, so a theme switch needs no
- * second stylesheet and the SVG graph (which bakes literal hexes) is the only
- * place that has to be told which theme it is in — see paintGraph() in app.js.
- * Both palettes are held to WCAG AA by tools/contrast.mjs (32/32 pairs pass).
+ * Tokens live on :root and are overridden under [data-theme="light"]. The
+ * DARK palette is the default on :root (a backlit board); the light palette is
+ * the override. Every colour the design uses is one of these variables, so a
+ * theme switch needs no second stylesheet. Both palettes are held to WCAG AA by
+ * tools/contrast.mjs (32/32 pairs pass).
  */
 :root{
-  /* --- paper & ink (light: archival paper) --- */
-  --paper:    #F2F0EA;
-  --paper-2:  #FBFAF6;
-  --paper-3:  #E8E5DC;
-  --ink:      #17170F;
-  --ink-2:    #45443C;
-  --ink-3:    #6E6C62;
-  --rule:     #D5D1C4;
-  --rule-2:   #BDB8A8;
+  /* --- slate surfaces (dark = native departures board) --- */
+  --paper:    #0E1417;  /* base slate */
+  --paper-2:  #141C20;  /* raised panel */
+  --paper-3:  #1B2429;  /* raised again (summary rows) */
+  --ink:      #E8F0EE;  /* primary text */
+  --ink-2:    #AFC0BC;  /* secondary text */
+  --ink-3:    #7A8B88;  /* tertiary / hints */
+  --rule:     #253238;
+  --rule-2:   #33454D;
 
-  /* --- the stamp (the one loud element) --- */
-  --stamp:      #9E2B20;
-  --stamp-soft: #F7E7E4;
+  /* --- phosphor status data (the one loud element) --- */
+  --stamp:      #7CFCB0;  /* data green — primary data / pass / accent */
+  --stamp-soft: #14291F;
 
   /* --- verdicts --- */
-  --ok:        #2C6A4C;
-  --ok-soft:   #E4EFE7;
-  --warn:      #8A5D12;
-  --warn-soft: #F5EDDD;
+  --ok:        #7CFCB0;
+  --ok-soft:   #14291F;
+  --fail:      #FF8A7A;  /* blocking error — warm, never green */
+  --fail-soft: #3A1F1B;
+  --warn:      #FFD27A;
+  --warn-soft: #2E2413;
 
-  /* --- texture: only visible on light paper --- */
-  --tex-a: rgba(23,23,15,.014);
-  --tex-b: rgba(23,23,15,.010);
+  /* --- texture: a faint scanline/vignette, only on dark --- */
+  --tex-a: rgba(124,252,176,.02);
+  --tex-b: rgba(255,255,255,.012);
 
-  /* --- type --- */
-  --sans: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+  /* --- type: monospace carries the board (data is mono), one clean sans for prose --- */
+  --sans: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   --mono: ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
 
   --hair:1px;
   --ease:cubic-bezier(.2,.6,.3,1);
 }
 
-/* Dark: the same materials at night — warm dark ground, pale ink, a brighter
-   stamp (the light stamp reads as dull brown on a dark surface). */
-[data-theme="dark"]{
-  --paper:    #14130E;
-  --paper-2:  #1D1C15;
-  --paper-3:  #282619;
-  --ink:      #F1EEE3;
-  --ink-2:    #CBC7B7;
-  --ink-3:    #9C9889;
-  --rule:     #33311F;
-  --rule-2:   #4E4B39;
+/* Light: the same board by day — paper-white slate, same phosphor identity
+   pulled down to a legible ink-green. This is the override, not the default. */
+[data-theme="light"]{
+  --paper:    #F4F6F5;
+  --paper-2:  #FFFFFF;
+  --paper-3:  #EAEFEC;
+  --ink:      #101C18;
+  --ink-2:    #3C4A47;
+  --ink-3:    #5E6D69;
+  --rule:     #C9D3CF;
+  --rule-2:   #AEBDB8;
 
-  --stamp:      #F08572;
-  --stamp-soft: #3B201B;
+  --stamp:      #0F7A4A;  /* ink-green, the phosphor pulled down for paper */
+  --stamp-soft: #DCEDE4;
 
-  --ok:        #7FC79B;
-  --ok-soft:   #1E2E24;
-  --warn:      #E0AE52;
-  --warn-soft: #332818;
+  --ok:        #0F7A4A;
+  --ok-soft:   #DCEDE4;
+  --fail:      #B02118;  /* ink-red, dark enough to clear AA on fail-soft */
+  --fail-soft: #F3D6D2;
+  --warn:      #8A6100;
+  --warn-soft: #F4E9CF;
 
   --tex-a: rgba(241,238,227,.016);
   --tex-b: rgba(241,238,227,.011);
@@ -161,7 +177,7 @@ body{
   transition:flex-grow .35s var(--ease);
 }
 .tally-seg:last-child{border-right:0}
-.tally-seg.fail{background:var(--stamp-soft);color:var(--stamp);font-weight:600}
+.tally-seg.fail{background:var(--fail-soft);color:var(--fail);font-weight:600}
 .tally-seg.warn{background:var(--warn-soft);color:var(--warn);font-weight:600}
 .tally-seg.pass{background:var(--ok-soft);color:var(--ok)}
 .tally-seg .n{font-weight:700}
@@ -382,7 +398,7 @@ body{
 }
 .item{border-bottom:var(--hair) solid var(--rule);padding:13px 2px 14px 13px;position:relative}
 .item::before{content:"";position:absolute;left:0;top:13px;bottom:14px;width:2px;background:var(--rule-2)}
-.item.fail::before{background:var(--stamp)}
+.item.fail::before{background:var(--fail)}
 .item.warn::before{background:var(--warn)}
 /* The verdict bar is the loud element; pass items recede so the red ones carry
    the eye. A pass bar at full strength competed with every failure on screen. */
@@ -392,7 +408,7 @@ body{
 .rid{font:10.5px/1 var(--mono);color:var(--ink-3);flex:none;padding-top:2px}
 .item-t{font-size:14.5px;font-weight:600;flex:1;min-width:0}
 .st{font:10px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;flex:none;padding-top:3px}
-.st.fail{color:var(--stamp);font-weight:700}
+.st.fail{color:var(--fail);font-weight:700}
 .st.warn{color:var(--warn);font-weight:700}
 .st.pass{color:var(--ink-3)}
 .st.na{color:var(--ink-3)}
@@ -402,7 +418,7 @@ body{
   background:var(--paper-3);border-left:2px solid var(--ink-3);
   font:12.5px/1.5 var(--mono);color:var(--ink-2);
 }
-.item.fail .fix{border-left-color:var(--stamp)}
+.item.fail .fix{border-left-color:var(--fail)}
 .item.pass .fix{border-left-color:var(--ok)}
 .src{
   margin-top:8px;
@@ -587,7 +603,7 @@ body{
   color:var(--ink-3);min-width:0;overflow:hidden;white-space:nowrap;
   transition:flex-grow .28s var(--ease);
 }
-.tally-seg.fails{background:var(--stamp-soft);color:var(--stamp)}
+.tally-seg.fails{background:var(--fail-soft);color:var(--fail)}
 .tally-seg.warns{background:var(--warn-soft);color:var(--warn)}
 .tally-seg.passes{background:var(--pass-soft);color:var(--pass)}
 /* 'not checked' is deliberately plain. It is not an error — nothing is wrong, the
@@ -876,7 +892,7 @@ body{
 }
 .fx-field{font-family:var(--mono);font-size:12.5px;color:var(--ink)}
 .fx-row .rid{font:10px/1 var(--mono);color:var(--ink-3);margin-left:auto}
-.fx-row.fail .rid{color:var(--stamp)}
+.fx-row.fail .rid{color:var(--fail)}
 .fx-row.warn .rid{color:var(--warn)}
 /* The field the fix list jumped to. A ring, so the jump is not just a scroll —
    the eye lands on the input it needs. */
