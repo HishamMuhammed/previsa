@@ -31,7 +31,7 @@
 
 import { useState } from 'react';
 
-export default function FixList({ rows, blocking, onGoTo }) {
+export default function FixList({ rows, blocking, cursor = null, onGoTo }) {
   const [expanded, setExpanded] = useState(false);
 
   if (!rows.length) {
@@ -70,8 +70,11 @@ export default function FixList({ rows, blocking, onGoTo }) {
           therefore always in the DOM and hidden by CSS when collapsed, which
           inverts the problem into one print CSS can solve. */}
       <ul className="fx-list" data-collapsed={!expanded}>
-        {rows.map((r) => (
-          <li key={`${r.doc}.${r.field}`} className={`fx-row ${r.status}`}>
+        {rows.map((r, i) => (
+          <li
+            key={`${r.doc}.${r.field}`}
+            className={`fx-row ${r.status} ${i === cursor ? 'is-cursor' : ''}`}
+          >
             {/* A button, because it performs an action. Not a label+input: the
                 input already exists once, in the document panel. */}
             <button
@@ -88,6 +91,14 @@ export default function FixList({ rows, blocking, onGoTo }) {
           </li>
         ))}
       </ul>
+      {/* The hint shows only once the cursor is active, so a keyboard user gets
+          told the keys exist at the moment they are relevant — and it does not
+          clutter the view for someone working with the mouse. */}
+      {cursor != null && (
+        <p className="fx-keys" aria-live="polite">
+          <kbd>j</kbd>/<kbd>k</kbd> move · <kbd>Enter</kbd> open the field
+        </p>
+      )}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import Checklist from './components/Checklist.jsx';
 import ApplicantBar from './components/ApplicantBar.jsx';
 import SnapshotPanel from './components/SnapshotPanel.jsx';
 import DocPanel from './components/DocPanel.jsx';
+import { useKeyboardNav } from './useKeyboardNav.js';
 import ReportPanel from './components/ReportPanel.jsx';
 import FixList from './components/FixList.jsx';
 import FieldGraph from './components/FieldGraph.jsx';
@@ -34,12 +35,30 @@ export default function App() {
   // the list and the panel need to agree on it.
   const [highlight, setHighlight] = useState(null);
 
+  // Keyboard cursor over the fix rows. `null` until j/k is pressed, so the list
+  // has no selected row on first paint and Enter does not fire on a stray key.
+  const [cursor, setCursor] = useState(null);
+
   const goToField = useCallback((doc, field) => {
     // Open the panel FIRST: scrolling to an input inside a collapsed document
     // scrolls to a zero-height box and looks like nothing happened.
     if (!openDocs.has(doc)) actions.toggleDoc(doc);
     setHighlight({ doc, field });
   }, [openDocs, actions]);
+
+  useKeyboardNav({
+    rows,
+    cursor,
+    setCursor,
+    onActivate: (row) => goToField(row.doc, row.field),
+  });
+
+  // Reset the cursor when the list changes underneath it — a row that was index 4
+  // may no longer exist after a fix, and a stale index would make Enter jump to
+  // the wrong field.
+  useEffect(() => {
+    if (cursor != null && cursor >= rows.length) setCursor(rows.length ? rows.length - 1 : null);
+  }, [rows.length, cursor]);
 
   // Scroll and focus once the panel is actually open and the input exists.
   //
@@ -187,7 +206,7 @@ export default function App() {
                   looking at? */}
               <ApplicantBar multi={state.multi} actions={actions} app={app} />
 
-              <FixList rows={rows} blocking={blocking} onGoTo={goToField} />
+              <FixList rows={rows} blocking={blocking} cursor={cursor} onGoTo={goToField} />
 
               {Object.entries(app.docs).map(([key, doc]) => (
                 <DocPanel

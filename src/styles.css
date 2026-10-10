@@ -664,6 +664,18 @@ body{
 }
 .ck-jump:hover{color:var(--ink);text-decoration:underline}
 .ck-jump:focus-visible{outline:2px solid var(--stamp);outline-offset:2px}
+.fx-keys{
+  margin:.5rem 0 0;font:11px/1.4 var(--sans);color:var(--ink-3);
+}
+.fx-keys kbd{
+  font:10px/1 var(--mono);color:var(--ink-2);
+  border:1px solid var(--rule);border-bottom-width:2px;
+  padding:2px 5px;background:var(--paper-2);
+}
+.fx-row.is-cursor .fx-jump{
+  background:var(--paper-3);
+  outline:2px solid var(--rule-2);outline-offset:-1px;
+}
 
 /* ================================================================= applicant bar */
 /* Multi-applicant mode: a group travelling together, sharing one trip but each
