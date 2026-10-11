@@ -38,19 +38,25 @@
   --rule:     #253238;
   --rule-2:   #33454D;
 
-  /* --- phosphor status data (the one loud element) --- */
-  --stamp:      #7CFCB0;  /* data green — primary data / pass / accent */
-  --stamp-soft: #14291F;
+  /* --- brand accent (NEUTRAL — never a status colour) ---
+   * On a real departures board the header text is white and green is reserved for
+   * "on time". So the accent — focus rings, the brand mark, active borders — is a
+   * neutral light, NOT a status hue. This is the fix for the old bug where --stamp
+   * was green AND served as the failure colour, so a blocking error rendered the
+   * same green as a passing check. Status now lives only in --pass/--fail/--warn. */
+  --stamp:      #D6E4DF;  /* accent — near-white slate, reads on dark */
+  --stamp-soft: #1F2A2E;
 
-  /* --- verdicts --- */
-  --ok:        #7CFCB0;
-  --ok-soft:   #14291F;
-  --pass:      #7CFCB0;  /* passing checks / the clean-state score */
-  --pass-soft: #14291F;
-  --fail:      #FF8A7A;  /* blocking error — warm, never green */
-  --fail-soft: #3A1F1B;
-  --warn:      #FFD27A;
-  --warn-soft: #2E2413;
+  /* --- verdicts (the ONLY status colours) --- */
+  --pass:      #5FE39A;  /* passing checks / cleared — green */
+  --pass-soft: #12291D;
+  --fail:      #FF7A6B;  /* blocking error — red, never green */
+  --fail-soft: #331A17;
+  --warn:      #FFC658;  /* check before submitting — amber */
+  --warn-soft: #2C2210;
+  /* --ok is an alias of --pass so older rules that say "ok" keep the same green. */
+  --ok:        #5FE39A;
+  --ok-soft:   #12291D;
 
   /* --- texture: a faint scanline/vignette, only on dark --- */
   --tex-a: rgba(124,252,176,.02);
@@ -80,18 +86,19 @@
   --rule:     #C9D3CF;
   --rule-2:   #AEBDB8;
 
-  --stamp:      #0F7A4A;  /* ink-green, the phosphor pulled down for paper */
-  --stamp-soft: #DCEDE4;
+  /* Brand accent (NEUTRAL — never a status colour): on light, a deep slate rather
+     than the old ink-green, so green stays reserved for "passing". */
+  --stamp:      #1A2E28;
+  --stamp-soft: #D7E0DC;
 
-  --ok:        #0F7A4A;
-  --ok-soft:   #DCEDE4;
-  --pass:      #0B6640;  /* one step darker than --ok: at #0F7A4A the pass text on
-                            pass-soft measured 4.43:1, under AA. #0B6640 clears it. */
+  --pass:      #0B6640;  /* passing / cleared — ink-green */
   --pass-soft: #DCEDE4;
-  --fail:      #B02118;  /* ink-red, dark enough to clear AA on fail-soft */
+  --fail:      #B02118;  /* blocking error — red */
   --fail-soft: #F3D6D2;
-  --warn:      #8A6100;
+  --warn:      #8A6100;  /* check before submitting — amber */
   --warn-soft: #F4E9CF;
+  --ok:        #0B6640;  /* alias of --pass */
+  --ok-soft:   #DCEDE4;
 
   --tex-a: rgba(241,238,227,.016);
   --tex-b: rgba(241,238,227,.011);
@@ -195,7 +202,7 @@ body{
 .io-note{
   margin:8px 0 0;font:11.5px/1.4 var(--mono);color:var(--ok);min-height:16px;
 }
-.io-note.is-bad{color:var(--stamp)}
+.io-note.is-bad{color:var(--fail)}
 
 /* ================================================================= buttons */
 .btn{
@@ -235,7 +242,7 @@ body{
 }
 .pdf-status:empty{display:none}
 .pdf-status.is-busy{border-left-color:var(--ink-3);color:var(--ink-3)}
-.pdf-status.is-bad{border-left-color:var(--stamp);color:var(--stamp);background:var(--stamp-soft)}
+.pdf-status.is-bad{border-left-color:var(--fail);color:var(--fail);background:var(--fail-soft)}
 .pdf-status.is-warn{border-left-color:var(--warn);color:var(--warn);background:var(--warn-soft)}
 .pdf-count{margin:14px 0 10px;font:12.5px/1.5 var(--sans);color:var(--ink-2)}
 .pdf-empty{font:13px/1.6 var(--sans);color:var(--ink-3);margin:0;padding:12px 0}
@@ -289,7 +296,7 @@ body{
   padding:11px 12px;margin:0 0 14px;
   background:var(--paper-3);border-left:3px solid var(--stamp);
 }
-.fx-count{font-size:16px;font-weight:600;color:var(--stamp)}
+.fx-count{font-size:16px;font-weight:600;color:var(--fail)}
 .fx-count.fx-clear{color:var(--ok)}
 .fx-sub{font:12.5px/1.4 var(--sans);color:var(--ink-2)}
 
@@ -329,7 +336,7 @@ body{
   margin-left:auto;font:10.5px/1 var(--mono);letter-spacing:.05em;
   padding:5px 8px;border:1px solid transparent;flex:none;
 }
-.db-fail{color:var(--stamp);background:var(--stamp-soft);border-color:rgba(158,43,32,.25)}
+.db-fail{color:var(--fail);background:var(--fail-soft);border-color:color-mix(in srgb, var(--fail) 30%, transparent)}
 .db-warn{color:var(--warn);background:var(--warn-soft);border-color:rgba(138,93,18,.25)}
 .db-ok{color:var(--ink-3);border-color:var(--rule)}
 /* Collapsed state. The JS toggle and the caret rotation were both already correct
@@ -390,10 +397,11 @@ body{
 .field input:focus{outline:0;border-color:var(--rule-2);border-left-color:var(--stamp)}
 .field input::placeholder{color:var(--ink-3);font-style:italic}
 .field input.empty{color:var(--ink-3);font-style:italic;background:var(--paper-3)}
-.field.f-fail input{border-left-color:var(--stamp);background:var(--stamp-soft)}
+.field.f-fail input{border-left-color:var(--fail);background:var(--fail-soft)}
 .field.f-warn input{border-left-color:var(--warn);background:var(--warn-soft)}
 .hint{grid-column:2;font:11.5px/1.45 var(--mono);color:var(--stamp);padding-top:4px}
 .field.f-warn .hint{color:var(--warn)}
+.field.f-fail .hint{color:var(--fail)}
 
 /* ================================================================= report */
 .filters{display:flex;flex-wrap:wrap;margin-bottom:16px;border:1px solid var(--rule-2);background:var(--paper-2)}
@@ -463,14 +471,12 @@ body{
   padding-left:10px;border-left:2px solid var(--rule);
 }
 
-/* ================================================================= graph */
+/* ================================================================= legend */
 .legend{display:flex;gap:20px;font:11.5px/1 var(--mono);color:var(--ink-3);margin-bottom:14px;flex-wrap:wrap}
 .sw{display:inline-block;width:22px;border-top:2px solid;vertical-align:middle;margin-right:7px}
 .sw.ok{border-color:var(--ok)}
-.sw.bad{border-color:var(--stamp)}
+.sw.bad{border-color:var(--fail)}
 .sw.na{border-color:var(--rule-2);border-top-style:dashed}
-#graph{border:var(--hair) solid var(--rule);background:var(--paper-2);padding:18px 16px;overflow-x:auto}
-#graph svg{display:block;min-width:780px}
 
 /* ================================================================= foot */
 .foot{
@@ -503,7 +509,7 @@ body{
      are chrome: on paper they are dead links and empty boxes. The footer is
      deliberately NOT in this list — the disclaimer is the one thing that must
      survive onto paper. */
-  .topbar-right,.filters,#graph,
+  .topbar-right,.filters,
   .fx-toggle,.file-row,.pdf-drop,.masthead-actions,.ck-toggle,
   .apbar,.snap-panel,
   .doc-h .caret{display:none !important}
@@ -696,7 +702,7 @@ body{
   border:1px solid var(--rule-2);color:var(--ink-3);
 }
 .ck-item.ok .ck-box{border-color:var(--ok);color:var(--ok)}
-.ck-item.problem .ck-box{border-color:var(--stamp);color:var(--stamp)}
+.ck-item.problem .ck-box{border-color:var(--fail);color:var(--fail)}
 .ck-item.missing .ck-box{border-style:dashed}
 .ck-label{color:var(--ink);font-weight:500}
 .ck-item.missing .ck-label{color:var(--ink-2)}
@@ -707,7 +713,7 @@ body{
   color:var(--ink-3);border:1px solid var(--rule);padding:3px 4px;flex:none;
 }
 .ck-state{margin-left:auto;flex:none;font:10.5px/1 var(--mono);color:var(--ink-3)}
-.ck-item.problem .ck-state{color:var(--stamp)}
+.ck-item.problem .ck-state{color:var(--fail)}
 .ck-jump{
   flex:none;background:none;border:0;padding:0 0 0 4px;cursor:pointer;
   font:11px/1 var(--sans);color:var(--ink-2);
@@ -843,7 +849,7 @@ body{
   font:11px/1.4 var(--mono);
 }
 .snap-row.added .snap-action{color:var(--ok)}
-.snap-row.removed .snap-action{color:var(--stamp)}
+.snap-row.removed .snap-action{color:var(--fail)}
 .snap-row.changed .snap-action{color:var(--ink)}
 .snap-action{font:600 9px/1 var(--sans);letter-spacing:.06em;text-transform:uppercase;flex:none;width:56px}
 .snap-row-doc{color:var(--ink-2);flex:none}
@@ -866,7 +872,7 @@ body{
   background:var(--paper-2);
   border-left:3px solid var(--rule-2);
 }
-.fx-clear.has{border-left-color:var(--stamp);background:var(--stamp-soft)}
+.fx-clear.has{border-left-color:var(--fail);background:var(--fail-soft)}
 .fx-count{
   font-family:var(--serif);
   font-size:1.06rem;
@@ -874,7 +880,7 @@ body{
   letter-spacing:-.008em;
   color:var(--ink);
 }
-.fx-clear.has .fx-count{color:var(--stamp)}
+.fx-clear.has .fx-count{color:var(--fail)}
 .fx-sub{margin:0;font:12.5px/1.5 var(--sans);color:var(--ink-2)}
 .fx-toggle{
   margin-left:auto;flex:none;
@@ -942,7 +948,7 @@ body{
   font-family:var(--mono);
   font-size:13.5px;
 }
-.field.is-bad input{border-left:3px solid var(--stamp);background:var(--stamp-soft)}
+.field.is-bad input{border-left:3px solid var(--fail);background:var(--fail-soft)}
 
 /* --- filters --- */
 .filters{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 1rem}
