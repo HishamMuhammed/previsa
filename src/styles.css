@@ -925,18 +925,6 @@ body{
 .fbtn.is-on{background:var(--ink);color:var(--paper-2);border-color:var(--ink)}
 .fbtn .n{font-family:var(--mono);opacity:.72;margin-left:3px}
 
-/* --- graph --- */
-.graph{width:100%;height:auto;max-width:420px;display:block;margin:0 auto}
-.edge{stroke:var(--stamp);stroke-width:1.5;opacity:.55}
-.edge.warn{stroke:var(--warn)}
-.node{fill:var(--paper-3);stroke:var(--rule-2);stroke-width:1.5}
-.node.bad{fill:var(--stamp-soft);stroke:var(--stamp)}
-.node-label{
-  font:9.5px var(--sans);fill:var(--ink-3);text-anchor:middle;
-  letter-spacing:.04em;
-}
-.edge-id{font:9px var(--mono);fill:var(--stamp);text-anchor:middle}
-
 /* --- file controls row --- */
 .file-row{
   display:flex;flex-wrap:wrap;gap:8px;

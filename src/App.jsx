@@ -1,7 +1,7 @@
 import { useMemo, useCallback, useEffect, useRef, useState } from 'react';
 import { usePrevisa } from './store.js';
 import { useTheme } from './useTheme.js';
-import { badFieldsByDoc, failCountByDoc, fixRows, graphEdges } from './derive.js';
+import { badFieldsByDoc, failCountByDoc, fixRows } from './derive.js';
 import ScoreHeader from './components/ScoreHeader.jsx';
 import Checklist from './components/Checklist.jsx';
 import ApplicantBar from './components/ApplicantBar.jsx';
@@ -10,7 +10,6 @@ import DocPanel from './components/DocPanel.jsx';
 import { useKeyboardNav } from './useKeyboardNav.js';
 import ReportPanel from './components/ReportPanel.jsx';
 import FixList from './components/FixList.jsx';
-import FieldGraph from './components/FieldGraph.jsx';
 import PdfImport from './components/PdfImport.jsx';
 
 const THEME_WORD = { auto: 'Auto', light: 'Light', dark: 'Dark' };
@@ -27,7 +26,6 @@ export default function App() {
   const failCounts = useMemo(() => failCountByDoc(report.findings, app), [report, app]);
   const onEdit = useCallback((doc, field, value) => actions.edit(doc, field, value), [actions]);
   const rows = useMemo(() => fixRows(report.findings, app), [report, app]);
-  const edges = useMemo(() => graphEdges(report.findings, app), [report, app]);
   const blocking = rows.filter((r) => r.status === 'fail').length;
 
   // The field the fix list is pointing at, so the document panel can open it,
@@ -268,9 +266,6 @@ export default function App() {
         <div className="cols">
           <div className="col">
             <PdfImport state={state} report={report} actions={actions} />
-          </div>
-          <div className="col">
-            <FieldGraph app={app} edges={edges} />
           </div>
         </div>
 

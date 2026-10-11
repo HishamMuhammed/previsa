@@ -203,31 +203,6 @@ export function fixRows(findings, app) {
   return rows;
 }
 
-/**
- * Edges for the field graph: two documents that disagree about the same fact.
- * Rules name the documents they compared in their detail text, so the edge is
- * recovered from the fields each finding implicates rather than from a separate
- * list that could drift.
- */
-export function graphEdges(findings, app) {
-  const edges = [];
-  const seen = new Set();
-  for (const f of findings) {
-    if (f.status !== 'fail' && f.status !== 'warn') continue;
-    const docs = [...new Set(fieldRefs(f, app).map((r) => r.doc))];
-    if (docs.length < 2) continue;
-    for (let i = 0; i < docs.length; i++) {
-      for (let j = i + 1; j < docs.length; j++) {
-        const key = [docs[i], docs[j]].sort().join('|') + f.id;
-        if (seen.has(key)) continue;
-        seen.add(key);
-        edges.push({ a: docs[i], b: docs[j], id: f.id, status: f.status });
-      }
-    }
-  }
-  return edges;
-}
-
 /** Documents to open on load: passport plus anything with a problem. */
 export function docsToOpen(findings, app) {
   const set = new Set(['passport']);
