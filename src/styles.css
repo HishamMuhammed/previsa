@@ -45,6 +45,8 @@
   /* --- verdicts --- */
   --ok:        #7CFCB0;
   --ok-soft:   #14291F;
+  --pass:      #7CFCB0;  /* passing checks / the clean-state score */
+  --pass-soft: #14291F;
   --fail:      #FF8A7A;  /* blocking error — warm, never green */
   --fail-soft: #3A1F1B;
   --warn:      #FFD27A;
@@ -57,6 +59,10 @@
   /* --- type: monospace carries the board (data is mono), one clean sans for prose --- */
   --sans: ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   --mono: ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+  /* The score is display type but this design has no serif — the departures board
+     is all sans. --serif is kept as an alias so nothing that referenced the old
+     theme's serif (the score) silently falls back to a browser default. */
+  --serif: var(--sans);
 
   --hair:1px;
   --ease:cubic-bezier(.2,.6,.3,1);
@@ -79,6 +85,9 @@
 
   --ok:        #0F7A4A;
   --ok-soft:   #DCEDE4;
+  --pass:      #0B6640;  /* one step darker than --ok: at #0F7A4A the pass text on
+                            pass-soft measured 4.43:1, under AA. #0B6640 clears it. */
+  --pass-soft: #DCEDE4;
   --fail:      #B02118;  /* ink-red, dark enough to clear AA on fail-soft */
   --fail-soft: #F3D6D2;
   --warn:      #8A6100;
@@ -262,6 +271,13 @@ body{
 .sg-input:focus-visible{outline:2px solid var(--stamp);outline-offset:-1px}
 .sg-apply{flex:none;padding:7px 12px;font-size:11px}
 .sg-alt{margin-top:8px;font:11px/1.4 var(--sans);color:var(--warn)}
+.sg-alt-btn{
+  font:11px/1 var(--mono);color:var(--ink-2);
+  background:var(--paper-3);border:1px solid var(--rule);
+  padding:3px 7px;margin:0 2px;cursor:pointer;
+}
+.sg-alt-btn:hover{border-color:var(--warn);color:var(--warn)}
+.sg-alt-btn:focus-visible{outline:2px solid var(--stamp);outline-offset:1px}
 .sg-why{margin-top:8px;font:10.5px/1.35 var(--mono);color:var(--ink-3)}
 
 /* ================================================================= fix list
@@ -589,6 +605,24 @@ body{
   color:var(--ink);
 }
 .verdict-sub{margin:0;font:13.5px/1.5 var(--sans);color:var(--ink-3);max-width:52ch}
+
+/* The clean-state confirmation. The one bold element of the success moment: a
+   pass-green tinted line spanning both columns under the tally. Fade-in only —
+   the score changing colour is already the motion; this just makes the payoff
+   legible. Hidden entirely unless score is 100% with nothing unchecked. */
+.cleared{
+  grid-column:1 / -1;
+  display:flex;align-items:center;gap:.6rem;
+  margin:.9rem 0 0;padding:.7rem 1rem;
+  font:14px/1.4 var(--sans);font-weight:550;
+  color:var(--pass);
+  background:var(--pass-soft);
+  border-left:3px solid var(--pass);
+  animation:cleared-in .28s var(--ease) both;
+}
+.cleared-mark{font-size:15px;line-height:1}
+@keyframes cleared-in{from{opacity:0;transform:translateY(-3px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.cleared{animation:none}}
 
 .tally{
   grid-area:tally;

@@ -17,8 +17,20 @@ const VERDICT = ({ fail, warn, na }) => {
   if (warn > 0) {
     return `${warn} thing${warn === 1 ? '' : 's'} to check before you submit.`;
   }
-  return 'Nothing blocking found. Read the report anyway.';
+  return 'Nothing blocks this application.';
 };
+
+// The clean state is the product's payoff, so it gets one deliberate moment rather
+// than the number quietly turning green. Restraint: a single confirmed line, no
+// confetti, no animation beyond a soft fade-in — the one place boldness is spent.
+function ClearedLine({ score }) {
+  return (
+    <p className="cleared" role="status">
+      <span className="cleared-mark" aria-hidden="true">✓</span>
+      Cleared for submission — every check passed ({score}%).
+    </p>
+  );
+}
 
 export default function ScoreHeader({ report }) {
   const { score, tally } = report;
@@ -67,6 +79,9 @@ export default function ScoreHeader({ report }) {
         )}
       </div>
       <span className="sr-only">{decided} checks evaluated.</span>
+      {tally.fail === 0 && tally.warn === 0 && tally.na === 0 && score === 100 && (
+        <ClearedLine score={score} />
+      )}
     </div>
   );
 }

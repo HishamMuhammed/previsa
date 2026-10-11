@@ -79,10 +79,14 @@ function finishLine(bucket) {
  * a separate box, so src/formfields.js needs the x/y of every item instead.
  * Returning both avoids parsing the document twice.
  */
-export async function extractLines(pdfDoc) {
+export async function extractLines(pdfDoc, onProgress) {
   const pages = [];
   const geometry = [];
   for (let p = 1; p <= pdfDoc.numPages; p++) {
+    // Report before the await: the expensive part is getTextContent, and the page
+    // number is known the moment the loop advances. Reporting after would lag by
+    // a full page and read as a hang on a slow document.
+    if (onProgress) onProgress(p, pdfDoc.numPages);
     const page = await pdfDoc.getPage(p);
     const tc = await page.getTextContent();
     pages.push(buildLines(tc.items));
@@ -114,10 +118,10 @@ export function hasTextLayer(pages) {
  * outcomes the user needs told in plain language — not exceptions to surface as
  * a stack trace.
  */
-export async function importPdf(buf, pdfjsLib) {
+export async function importPdf(buf, pdfjsLib, opts = {}) {
   try {
     const doc = await pdfjsLib.getDocument({ data: new Uint8Array(buf) }).promise;
-    const { pages, geometry } = await extractLines(doc);
+    const { pages, geometry } = await extractLines(doc, opts.onProgress);
     const text = hasTextLayer(pages);
     return {
       ok: true,

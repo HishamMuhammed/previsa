@@ -34,6 +34,8 @@ const dark = {
   data:    '#7CFCB0',  // phosphor green — primary data
   dataDim: '#4FB787',  // secondary data / labels
   fail:    '#FF8A7A',  // blocking error (warm, not green)
+  pass:    '#7CFCB0',
+  passSoft:'#14291F',
   failSoft:'#3A1F1B',
   warn:    '#FFD27A',
   ok:      '#7CFCB0',
@@ -55,6 +57,8 @@ const light = {
   failSoft:'#F3D6D2',  // lightened a touch so the darker red still clears 4.5 on it
   warn:    '#8A6100',  // darkened from #9A6B00: 4.32:1 on light bg, under AA
   ok:      '#0F7A4A',
+  pass:    '#0B6640',
+  passSoft:'#DCEDE4',
   ink:     '#101C18',
   ink2:    '#3C4A47',
   ink3:    '#5E6D69',
@@ -77,6 +81,9 @@ const pairs = [
   ['warn on bg',       'warn', 'bg',    4.5, false],
   ['warn on panel',    'warn', 'panel', 4.5, false],
   ['ok on bg',         'ok',   'bg',    4.5, false],
+  ['pass on bg',       'pass', 'bg',    4.5, false],
+  ['pass on panel',    'pass', 'panel', 4.5, false],
+  ['pass on passSoft', 'pass', 'passSoft', 4.5, false],
   // Hairlines are decorative dividers, not UI components (WCAG's 3:1 non-text
   // rule covers controls and focus indicators, not divider lines). They need to
   // be *visible*, which ~1.4:1 is, so they are checked at a lower 1.2 floor to

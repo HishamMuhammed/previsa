@@ -51,7 +51,14 @@ export default function PdfImport({ state, report, actions }) {
     }
 
     const buf = await file.arrayBuffer();
-    const result = await importPdf(buf, pdfjsLib);
+    // Progress callback: importPdf reports the page it is on, so a 20-page
+    // statement shows "Reading page 7 of 20" instead of one silent "Reading…"
+    // that could be a hang. The user is told the read is working.
+    const result = await importPdf(buf, pdfjsLib, {
+      onProgress: (page, total) => {
+        actions.setStatus({ text: `Reading ${file.name} — page ${page} of ${total}…`, tone: 'busy' });
+      },
+    });
 
     if (!result.ok) {
       actions.setStatus({ text: `${file.name}: ${result.message}`, tone: 'bad' });
@@ -68,6 +75,7 @@ export default function PdfImport({ state, report, actions }) {
 
     // Plain-text path: booking confirmations, itineraries, bank statements.
     const { suggestions } = suggestFields(result.pages, importDoc);
+    const rawCount = suggestions.length;
     let best = bestPerField(suggestions);
     let formFields = null;
 
@@ -76,9 +84,16 @@ export default function PdfImport({ state, report, actions }) {
     // it finds strictly more — a hotel booking's dotted fill-in rules read as a
     // date under the text path, so "fewer than nothing" is not the right test.
     const form = runFormExtraction(result.geometry, importDoc, state.app);
+    // Fields the scoping left out, shown in the summary so a partial read reads as
+    // partial. Text path: duplicates bestPerField collapsed. Form path: numbered
+    // fields the type-scoper rejected (form.total is every field it saw).
+    let scopedAway;
     if (form && form.total > 0 && form.best.length > best.length) {
       best = form.best;
       formFields = form;
+      scopedAway = formFields.total - formFields.best.length;
+    } else {
+      scopedAway = rawCount - best.length;
     }
 
     const skipped = result.pageCount > 1 ? ` · ${result.pageCount} pages` : '';
@@ -93,7 +108,7 @@ export default function PdfImport({ state, report, actions }) {
       text = `${file.name}: read ${result.chars} characters${skipped}${looks}`;
     }
 
-    actions.imported(importDoc, { doc: importDoc, best, formFields }, {
+    actions.imported(importDoc, { doc: importDoc, best, formFields, scopedAway }, {
       text: `${text}. Check each suggestion before applying — Previsa does not fill anything in on its own.`,
       tone: 'idle',
     });
@@ -120,6 +135,9 @@ export default function PdfImport({ state, report, actions }) {
   }
 
   const { best } = pendingImport;
+  // A field found more than once. Counted here from the candidates already on
+  // each suggestion, so the summary line can say how many were ambiguous.
+  const multiCandidate = best.filter((s) => (s.alternatives?.length ?? 0) > 0).length;
 
   return (
     <section className="panel">
@@ -159,28 +177,59 @@ export default function PdfImport({ state, report, actions }) {
 
       {best.length > 0 && (
         <div id="pdf-panel">
+          {/* A legible read summary: how many fields matched, how many had more
+              than one candidate, how many the scoping dropped. A partial read is
+              the normal case, and the user needs to see it is partial rather than
+              assume silence means a complete import. */}
           <p className="pdf-count" id="sg-count">
-            {best.length} suggestion{best.length === 1 ? '' : 's'}, none applied yet — applying one
-            updates your file and re-runs every check.
+            {best.length} suggestion{best.length === 1 ? '' : 's'}, none applied yet
+            {multiCandidate > 0 && ` · ${multiCandidate} had more than one candidate — showing the best, alternates below`}
+            {pendingImport.scopedAway > 0 && ` · ${pendingImport.scopedAway} matched a different document type and were left out`}
+            . Applying one updates your file and re-runs every check.
           </p>
           <div id="pdf-suggestions">
             {best.map((s, i) => (
-              <div key={`${s.field}-${i}`} className="sg">
-                <div className="sg-head">
+              <div key={`${s.field}-${i}`} className={`sg ${s.confidence}`}>
+                <div className="sg-top">
                   <span className="sg-field">{s.field}</span>
                   <span className="sg-conf">{CONFIDENCE_WORD[s.confidence] ?? s.confidence}</span>
                 </div>
-                <input
-                  className="sg-input"
-                  value={edited[i] ?? s.value}
-                  onChange={(e) => setEdited((p) => ({ ...p, [i]: e.target.value }))}
-                />
-                <div className="sg-foot">
-                  <span className="sg-source">{s.source}</span>
+                {/* The exact source line, so the user can verify the read against
+                    the document without re-opening it. Trust comes from showing
+                    where a value came from, not asserting it. */}
+                {s.sourceLine && (
+                  <p className="sg-src">read from <code>{s.sourceLine}</code></p>
+                )}
+                <div className="sg-row">
+                  <input
+                    className="sg-input"
+                    value={edited[i] ?? s.value}
+                    onChange={(e) => setEdited((p) => ({ ...p, [i]: e.target.value }))}
+                    aria-label={`Suggested value for ${s.field}`}
+                  />
                   <button className="btn btn-quiet sg-apply" type="button" onClick={() => applyOne(i)}>
                     {edited[i] != null && edited[i] !== s.value ? 'Apply' : 'Reapply'}
                   </button>
                 </div>
+                {/* Alternates: a field found twice is shown, not silently resolved.
+                    The best candidate is in the box; the others are one click away. */}
+                {s.alternatives?.length > 0 && (
+                  <div className="sg-alt">
+                    also found:{' '}
+                    {s.alternatives.map((a, j) => (
+                      <button
+                        key={j}
+                        type="button"
+                        className="sg-alt-btn"
+                        onClick={() => setEdited((p) => ({ ...p, [i]: a.value }))}
+                        title={`${a.sourceLine ?? ''}${a.why ? ` — ${a.why}` : ''}`}
+                      >
+                        {a.value}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                {s.why && <p className="sg-why">{s.why}</p>}
               </div>
             ))}
           </div>
